@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/blogs - Get all blogs
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(req.url);
+    const url = new URL(request.url);
     const published = url.searchParams.get('published');
     
     let where = {};
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/blogs - Create a new blog
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { title, content, slug, image, published = false } = body;
     
     if (!title || !content || !slug) {

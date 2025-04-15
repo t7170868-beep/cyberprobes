@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/blogs/[id] - Get a specific blog
 export async function GET(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+  
   try {
-    const id = params.id;
-    
     const blog = await prisma.blog.findUnique({
       where: { id },
     });
@@ -34,9 +34,11 @@ export async function GET(
 
 // PUT /api/blogs/[id] - Update a specific blog
 export async function PUT(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+  
   try {
     const session = await getServerSession(authOptions);
     
@@ -47,8 +49,7 @@ export async function PUT(
       );
     }
 
-    const id = params.id;
-    const body = await req.json();
+    const body = await request.json();
     const { title, content, slug, image, published } = body;
     
     const blog = await prisma.blog.update({
@@ -74,9 +75,11 @@ export async function PUT(
 
 // DELETE /api/blogs/[id] - Delete a specific blog
 export async function DELETE(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+  
   try {
     const session = await getServerSession(authOptions);
     
@@ -86,8 +89,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-
-    const id = params.id;
     
     await prisma.blog.delete({
       where: { id },
