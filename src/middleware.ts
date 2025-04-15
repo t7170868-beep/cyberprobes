@@ -10,6 +10,11 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Skip middleware for NextAuth API routes to prevent interference
+  if (pathname.includes('/api/auth')) {
+    return NextResponse.next();
+  }
+
   // Admin routes require authentication and admin role
   if (pathname.startsWith('/dashboard/admin')) {
     if (!token) {

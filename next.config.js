@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove output: 'export'
+  // Remove output: 'export' - this would disable API routes
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
