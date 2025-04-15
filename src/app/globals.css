@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #111827;
+  --background: #ffffff;
+  --card-background: #ffffff;
+  --card-text: #4b5563;
+  --paragraph-text: #4b5563;
+  --input-background: #f9fafb;
+  --input-border: #d1d5db;
+  --button-primary: #2563eb;
+  --button-primary-hover: #1d4ed8;
+  --header-background: #1e40af;
+  --header-text: #ffffff;
+}
+
+.dark {
+  --foreground: #f9fafb;
+  --background: #111827;
+  --card-background: #1f2937;
+  --card-text: #d1d5db;
+  --paragraph-text: #d1d5db;
+  --input-background: #374151;
+  --input-border: #4b5563;
+  --button-primary: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --header-background: #1e3a8a;
+  --header-text: #f9fafb;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+/* Service card text styling */
+.service-card {
+  background: var(--background) !important;
+  border: 1px solid var(--input-border) !important;
+  transition: all 0.3s ease !important;
+}
+
+.service-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-card h3 {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+}
+
+.service-card p {
+  color: var(--paragraph-text) !important;
+  font-weight: 400 !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Global text colors */
+.text-gray-600, .text-gray-700 {
+  color: var(--paragraph-text) !important;
+}
+
+/* Custom button styles */
+.btn-primary {
+  background-color: var(--button-primary) !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--button-primary-hover) !important;
+}
+
+.input-field {
+  background-color: var(--input-background) !important;
+  border-color: var(--input-border) !important;
+  color: var(--foreground) !important;
+}
+
+.card {
+  background-color: var(--card-background) !important;
+  color: var(--foreground) !important;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

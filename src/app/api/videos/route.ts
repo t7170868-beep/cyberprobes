@@ -1,0 +1,76 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { prisma } from '@/lib/prisma';
+
+// GET /api/videos - Get all videos
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const published = url.searchParams.get('published');
+    
+    let where = {};
+    if (published === 'true') {
+      where = { published: true };
+    } else if (published === 'false') {
+      where = { published: false };
+    }
+
+    const videos = await prisma.video.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json(videos);
+  } catch (error) {
+    console.error('Error fetching videos:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch videos' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/videos - Create a new video
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    // Check authorization
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const { title, description, url, published = false } = body;
+    
+    // Validate required fields
+    if (!title || !url) {
+      return NextResponse.json(
+        { error: 'Missing required fields: title and url are required' },
+        { status: 400 }
+      );
+    }
+
+    // Create video
+    const video = await prisma.video.create({
+      data: {
+        title,
+        description,
+        url,
+        published,
+      },
+    });
+
+    return NextResponse.json(video, { status: 201 });
+  } catch (error) {
+    console.error('Error creating video:', error);
+    return NextResponse.json(
+      { error: 'Failed to create video' },
+      { status: 500 }
+    );
+  }
+} 
