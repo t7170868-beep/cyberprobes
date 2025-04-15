@@ -25,8 +25,12 @@ declare module "next-auth/jwt" {
   }
 }
 
+// Determine if we should use a database adapter based on the DATABASE_URL
+const useAdapter = process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('file:');
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  // Only use PrismaAdapter if we have a proper database URL (not SQLite)
+  ...(useAdapter ? { adapter: PrismaAdapter(prisma) } : {}),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -39,26 +43,31 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
+        try {
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            }
+          });
+
+          if (!user || !user?.password) {
+            throw new Error("Invalid credentials");
           }
-        });
 
-        if (!user || !user?.password) {
-          throw new Error("Invalid credentials");
+          const isCorrectPassword = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+
+          if (!isCorrectPassword) {
+            throw new Error("Invalid credentials");
+          }
+
+          return user;
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
         }
-
-        const isCorrectPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isCorrectPassword) {
-          throw new Error("Invalid credentials");
-        }
-
-        return user;
       }
     })
   ],
@@ -82,6 +91,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/login",
+    error: "/auth/error",
   },
   debug: process.env.NODE_ENV === "development",
   session: {
