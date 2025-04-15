@@ -12,8 +12,6 @@ export async function middleware(request: NextRequest) {
 
   // Admin routes require authentication and admin role
   if (pathname.startsWith('/dashboard/admin')) {
-    // Temporarily commented out for debugging
-    /*
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
@@ -22,27 +20,20 @@ export async function middleware(request: NextRequest) {
     if (token.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
-    */
   }
 
   // Course detail routes require authentication (but not the main courses listing page)
   if (pathname.startsWith('/courses/') && pathname !== '/courses') {
-    // Temporarily commented out for debugging
-    /*
     if (!token) {
       return NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, request.url));
     }
-    */
   }
 
   // Dashboard routes require authentication
   if (pathname.startsWith('/dashboard')) {
-    // Temporarily commented out for debugging
-    /*
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
-    */
   }
 
   // Redirect logged-in users from login page to dashboard
