@@ -10,6 +10,7 @@ interface Video {
   title: string;
   description: string | null;
   url: string;
+  published: boolean;
 }
 
 export default function DashboardPage() {
@@ -34,33 +35,26 @@ export default function DashboardPage() {
   const fetchVideos = async () => {
     setLoading(true);
     try {
-      // In a real application, this would be an API call to fetch videos
-      // For demo purposes, we'll use mock data
-      const mockVideos: Video[] = [
-        {
-          id: '1',
-          title: 'Introduction to Cyber Security',
-          description: 'Learn the basics of cyber security and why it matters for your business.',
-          url: 'https://www.youtube.com/embed/inWWhr5tnEA'
-        },
-        {
-          id: '2',
-          title: 'Common Security Threats',
-          description: 'Understand the most common security threats facing organizations today.',
-          url: 'https://www.youtube.com/embed/Dk-ZqQ-bfy4'
-        },
-        {
-          id: '3',
-          title: 'Security Best Practices',
-          description: 'Essential security best practices for protecting your digital assets.',
-          url: 'https://www.youtube.com/embed/PYXdlQwkRrI'
-        }
-      ];
+      // Fetch videos from the API - only published videos for regular users
+      const response = await fetch('/api/videos?published=true');
       
-      setVideos(mockVideos);
-      setSelectedVideo(mockVideos[0]);
+      if (!response.ok) {
+        throw new Error('Failed to fetch videos');
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        setVideos(data);
+        setSelectedVideo(data[0]);
+      } else {
+        // Remove fallback videos and just set empty array
+        setVideos([]);
+        setSelectedVideo(null);
+      }
     } catch (err) {
       console.error('Error fetching videos:', err);
+      // Show some fallback content or error message
     } finally {
       setLoading(false);
     }
@@ -96,13 +90,26 @@ export default function DashboardPage() {
               {selectedVideo ? (
                 <div>
                   <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-lg mb-4">
-                    <iframe
-                      src={selectedVideo.url}
-                      title={selectedVideo.title}
-                      frameBorder="0"
-                      allowFullScreen
-                      className="absolute top-0 left-0 w-full h-full"
-                    ></iframe>
+                    {selectedVideo.url.includes('youtube.com') ? (
+                      // YouTube embed
+                      <iframe
+                        src={selectedVideo.url}
+                        title={selectedVideo.title}
+                        frameBorder="0"
+                        allowFullScreen
+                        className="absolute top-0 left-0 w-full h-full"
+                      ></iframe>
+                    ) : (
+                      // Self-hosted video
+                      <video
+                        src={selectedVideo.url}
+                        controls
+                        className="absolute top-0 left-0 w-full h-full"
+                        poster="/images/video-poster.jpg"
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
                   </div>
                   <h2 className="text-2xl font-bold mb-2">{selectedVideo.title}</h2>
                   {selectedVideo.description && (
@@ -125,7 +132,7 @@ export default function DashboardPage() {
                   <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="text-gray-600">Loading videos...</p>
                 </div>
-              ) : (
+              ) : videos.length > 0 ? (
                 <div className="space-y-4">
                   {videos.map(video => (
                     <div 
@@ -139,6 +146,10 @@ export default function DashboardPage() {
                       )}
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-600">No videos available at this time.</p>
                 </div>
               )}
             </div>

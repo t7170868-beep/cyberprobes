@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { useTheme } from 'next-themes';
+// import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { theme, setTheme } = useTheme();
+  // const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -19,53 +19,60 @@ export default function Navbar() {
   }, []);
 
   const isActive = (path: string) => {
-    return pathname === path ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : '';
+    return pathname === path ? 'text-cyber-blue glow-border' : 'text-gray-300 hover:text-cyber-blue';
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+  // const toggleTheme = () => {
+  //   setTheme(theme === 'dark' ? 'light' : 'dark');
+  // };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-md">
+    <header className="glass-card border-b border-glass-border sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-800 dark:text-white">
-              CyberProbes
+            <Link href="/" className="flex items-center space-x-3 magnetic-button">
+              <div className="w-10 h-10 glow-border rounded-lg flex items-center justify-center relative overflow-hidden">
+                <span className="font-orbitron font-bold text-lg cyber-text">C</span>
+                <div className="absolute inset-0 bg-cyber-blue opacity-10 animate-pulse"></div>
+              </div>
+              <span className="font-orbitron text-xl font-bold cyber-text">CyberProbes</span>
             </Link>
           </div>
           
           <div className="hidden md:flex items-center space-x-6">
             <nav className="flex space-x-6">
-              <Link href="/" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/')}`}>
+              <Link href="/" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/')}`}>
                 Home
               </Link>
-              <Link href="/about" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/about')}`}>
+              <Link href="/about" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/about')}`}>
                 About Us
               </Link>
-              <Link href="/services" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/services')}`}>
+              <Link href="/services" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/services')}`}>
                 Services
               </Link>
-              <Link href="/blog" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/blog')}`}>
+              <Link href="/blog" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/blog')}`}>
                 Blog
               </Link>
-              <Link href="/contact" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/contact')}`}>
+              <Link href="/contact" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/contact')}`}>
                 Contact
               </Link>
               
-              {/* Making Dashboard always visible for debugging */}
-              <Link href="/dashboard" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard')}`}>
-                Dashboard
-              </Link>
-              
               {session ? (
-                <button 
-                  onClick={() => signOut()}
-                  className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                >
-                  Logout
-                </button>
+                <>
+                  <Link href="/dashboard" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard')}`}>
+                    Dashboard
+                  </Link>
+                  <Link href="/dashboard/cases" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard/cases')}`}>
+                    Cases
+                  </Link>
+                  <button 
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <Link href="/auth/login" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/auth/login')}`}>
                   Login / Register
@@ -73,46 +80,12 @@ export default function Navbar() {
               )}
             </nav>
             
-            {/* Theme toggle button */}
-            <button 
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Toggle theme"
-            >
-              {mounted && (
-                theme === 'dark' ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )
-              )}
-            </button>
+            {/* Theme toggle button removed temporarily */}
           </div>
           
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
-            {/* Theme toggle button */}
-            <button 
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Toggle theme"
-            >
-              {mounted && (
-                theme === 'dark' ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )
-              )}
-            </button>
+            {/* Theme toggle button removed temporarily */}
 
             <button 
               className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
@@ -165,25 +138,32 @@ export default function Navbar() {
                 Contact
               </Link>
               
-              {/* Making Dashboard always visible in mobile menu for debugging */}
-              <Link 
-                href="/dashboard" 
-                className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard')}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-              
               {session ? (
-                <button 
-                  onClick={() => {
-                    signOut();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-left"
-                >
-                  Logout
-                </button>
+                <>
+                  <Link 
+                    href="/dashboard" 
+                    className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard')}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link 
+                    href="/dashboard/cases" 
+                    className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard/cases')}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Cases
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      signOut({ callbackUrl: '/' });
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-left"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <Link 
                   href="/auth/login" 

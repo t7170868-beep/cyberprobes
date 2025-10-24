@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
@@ -14,76 +9,110 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String
-  email         String    @unique
-  password      String
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Blog {
-  id            String    @id @default(uuid())
-  title         String
-  content       String
-  slug          String    @unique
-  image         String?
-  published     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  slug      String   @unique
+  image     String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Video {
-  id            String    @id @default(uuid())
-  title         String
-  description   String?
-  url           String
-  published     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  url         String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Course {
-  id            String    @id @default(uuid())
-  title         String
-  description   String
-  slug          String    @unique
-  materials     CourseMaterial[]
-  published     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String           @id @default(uuid())
+  title       String
+  description String
+  slug        String           @unique
+  published   Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  materials   CourseMaterial[]
 }
 
 model CourseMaterial {
-  id            String    @id @default(uuid())
-  title         String
-  type          MaterialType
-  url           String
-  courseId      String
-  course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  title     String
+  type      String
+  url       String
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Contact {
-  id            String    @id @default(uuid())
-  name          String
-  email         String
-  subject       String?
-  message       String
-  createdAt     DateTime  @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
 }
 
-enum Role {
-  USER
-  ADMIN
+// Case Management for Digital Forensics
+model Case {
+  id                  String         @id @default(uuid())
+  caseNumber          String         @unique
+  title               String
+  description         String
+  priority            String         @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  incidentType        String
+  status              String         @default("SUBMITTED") // SUBMITTED, UNDER_ANALYSIS, EVIDENCE_COLLECTED, REPORT_READY, COMPLETED
+  contactPerson       String
+  contactEmail        String
+  contactPhone        String?
+  urgency             Boolean        @default(false)
+  confidentialityLevel String        @default("STANDARD") // STANDARD, CONFIDENTIAL, HIGHLY_CONFIDENTIAL
+  clientEmail         String
+  assignedAnalyst     String?
+  estimatedCompletion DateTime?
+  progress            Int            @default(0)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  evidenceFiles       EvidenceFile[]
 }
 
-enum MaterialType {
-  VIDEO
-  PDF
-  DOCUMENT
-  IMAGE
-  OTHER
+model EvidenceFile {
+  id         String   @id @default(uuid())
+  caseId     String
+  fileName   String
+  fileSize   Int
+  fileType   String
+  checksum   String
+  uploadPath String
+  encrypted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  case       Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
+// Security audit logging
+model AuditLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime @default(now())
+  action    String   // AUTH_ATTEMPT, ADMIN_*, SECURITY_*
+  userId    String?  // May be null for some security events
+  ipAddress String?
+  severity  String?  // LOW, MEDIUM, HIGH, CRITICAL
+  details   String   // JSON string with event details
 }

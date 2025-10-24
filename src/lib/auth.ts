@@ -1,4 +1,3 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { NextAuthOptions } from "next-auth";
@@ -25,12 +24,8 @@ declare module "next-auth/jwt" {
   }
 }
 
-// Determine if we should use a database adapter based on the DATABASE_URL
-const useAdapter = process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('file:');
-
+// We're using SQLite, so we don't need the PrismaAdapter
 export const authOptions: NextAuthOptions = {
-  // Only use PrismaAdapter if we have a proper database URL (not SQLite)
-  ...(useAdapter ? { adapter: PrismaAdapter(prisma) } : {}),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -40,33 +35,53 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          console.log("Missing credentials");
+          throw new Error("Email and password are required");
         }
 
         try {
+          // Normalize email to lowercase
+          const normalizedEmail = credentials.email.toLowerCase().trim();
+          
+          // Find user by email
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email
+              email: normalizedEmail
             }
           });
 
-          if (!user || !user?.password) {
+          if (!user) {
+            console.log(`No user found for email: ${normalizedEmail}`);
             throw new Error("Invalid credentials");
           }
 
-          const isCorrectPassword = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isCorrectPassword) {
-            throw new Error("Invalid credentials");
+          if (!user.password) {
+            console.log(`User found but no password set for email: ${normalizedEmail}`);
+            throw new Error("Account requires password reset");
           }
 
-          return user;
+          try {
+            // Compare passwords
+            const isPasswordValid = await bcrypt.compare(
+              credentials.password,
+              user.password
+            );
+
+            if (!isPasswordValid) {
+              console.log(`Invalid password for user: ${normalizedEmail}`);
+              throw new Error("Invalid credentials");
+            }
+
+            console.log(`Login successful for: ${normalizedEmail}, role: ${user.role}`);
+            return user;
+          } catch (bcryptError) {
+            console.error("Password comparison error:", bcryptError);
+            throw new Error("Authentication error");
+          }
         } catch (error) {
-          console.error("Auth error:", error);
-          return null;
+          console.error("Authorization error:", error);
+          // Always return a generic error message to avoid security information disclosure
+          throw new Error("Invalid credentials");
         }
       }
     })
@@ -93,9 +108,9 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/login",
     error: "/auth/error",
   },
-  debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "your-default-secret-do-not-use-in-production",
 }; 

@@ -55,8 +55,15 @@ export default function DashboardLayout({ children }: LayoutProps) {
   }, [status, session, router]);
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/');
+    try {
+      await signOut({ callbackUrl: '/' });
+      // The redirect will be handled by the signOut function's callbackUrl
+      // No need to manually redirect, which could cause race conditions
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback in case signOut fails
+      router.push('/');
+    }
   };
 
   if (status === 'loading') {

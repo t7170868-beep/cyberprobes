@@ -46,16 +46,37 @@ export default function ProfilePage() {
     setIsLoading(true);
     
     try {
-      // In a real app, this would be an API call to update the user profile
-      console.log('Profile update submitted:', form);
+      // API call to update user profile
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          currentPassword: form.currentPassword || undefined,
+          newPassword: form.newPassword || undefined,
+        }),
+      });
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update profile');
+      }
+      
+      // Reset password fields
+      setForm(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
       
       alert('Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Error updating profile');
+      alert(error instanceof Error ? error.message : 'Error updating profile');
     } finally {
       setIsLoading(false);
     }

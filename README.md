@@ -1,113 +1,217 @@
-# CyberProbes - Cyber Security & Forensic Services Website
+# CyberProbes - Digital Forensics & Cybersecurity
 
-CyberProbes is a modern, responsive website built with Next.js for a cyber security and digital forensics company. The website includes user authentication, an admin panel, blog functionality, and secure video access for registered users.
+A modern, professional website for CyberProbes, a digital forensics and cybersecurity services company. Built with Next.js 15, TypeScript, and Tailwind CSS.
 
-## Features
+## 🚀 Features
 
-- **Modern, Responsive Design**: Fully responsive website built with Next.js and TailwindCSS
-- **User Authentication System**: Secure login and registration system using NextAuth.js
-- **Admin Panel**: Content management system for videos and blog posts
-- **Blog System**: Fully-featured blog with rich content
-- **Protected Video Content**: Access to exclusive video content for registered users
-- **Contact Form**: User-friendly contact form that sends inquiries to info@cyberprobes.in
+- **Modern UI/UX**: Dark theme with animated gradients and smooth transitions
+- **SEO Optimized**: Complete meta tags, Open Graph, Twitter cards, sitemap
+- **Performance**: Image optimization, lazy loading, bundle optimization
+- **Security**: CSP headers, HTTPS redirects, input sanitization
+- **Responsive**: Mobile-first design with Tailwind CSS
+- **Authentication**: NextAuth.js with secure session management
+- **Database**: Prisma ORM with SQLite
+- **Forms**: Contact form with reCAPTCHA protection
+- **Blog System**: Dynamic blog with database integration
 
-## Pages
+## 🛠️ Tech Stack
 
-- **Home**: Landing page with service overview and call-to-action sections
-- **About Us**: Company information, team members, and value proposition
-- **Services**: Detailed information about cyber security and forensic services
-- **Blog**: Articles and insights about cyber security topics
-- **Contact**: Contact form and company information
-- **Login/Register**: User authentication pages
-- **Dashboard**: User dashboard with access to exclusive videos
-- **Admin Dashboard**: Content management for videos and blog posts
-
-## Tech Stack
-
-- **Frontend Framework**: Next.js
-- **CSS Framework**: TailwindCSS
+- **Framework**: Next.js 15.3.0
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: SQLite with Prisma ORM
 - **Authentication**: NextAuth.js
-- **Database ORM**: Prisma
-- **Database**: SQLite (can be easily replaced with PostgreSQL, MySQL, etc.)
-- **Styling**: Modern UI with responsive design
+- **UI Components**: Custom components with Tailwind
+- **Fonts**: Inter (Google Fonts)
+- **Security**: reCAPTCHA, CSP headers, input validation
 
-## Getting Started
+## 📋 Prerequisites
 
-### Prerequisites
+- Node.js 18.x or 20.x
+- npm or yarn
+- Git
 
-- Node.js 16+ and npm
+## 🚀 Quick Start
 
-### Installation
-
-1. Clone the repository
-   ```
-   git clone https://github.com/yourusername/cyberprobes-site.git
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
    cd cyberprobes-site
    ```
 
-2. Install dependencies
-   ```
+2. **Install dependencies**
+   ```bash
    npm install
    ```
 
-3. Set up environment variables
-   Create a `.env` file in the root directory with the following:
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
    ```
-   DATABASE_URL="file:./dev.db"
-   NEXTAUTH_SECRET="your-secret-key-here-change-in-production"
+   
+   Update the following variables in `.env.local`:
+   ```env
+   DATABASE_URL="file:./prisma/dev.db"
+   NEXTAUTH_SECRET="your-secret-key-here"
    NEXTAUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+   NEXT_PUBLIC_RECAPTCHA_SITE_KEY="your-recaptcha-site-key"
    ```
 
-4. Initialize the database
-   ```
-   npx prisma migrate dev
+4. **Set up the database**
+   ```bash
+   npm run db:generate
+   npm run db:push
+   npm run db:seed
    ```
 
-5. Run the development server
-   ```
+5. **Start the development server**
+   ```bash
    npm run dev
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Development Workflow
+## 📝 Available Scripts
 
-### Database Management
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint errors
+- `npm run type-check` - Run TypeScript type checking
+- `npm run db:generate` - Generate Prisma client
+- `npm run db:push` - Push database schema
+- `npm run db:seed` - Seed database with sample data
+- `npm run db:studio` - Open Prisma Studio
+- `npm run db:migrate` - Run database migrations
+- `npm run clean` - Clean build cache
+- `npm run analyze` - Analyze bundle size
 
-- Modify the database schema in `prisma/schema.prisma`
-- Run migrations: `npx prisma migrate dev --name [migration-name]`
-- View database: `npx prisma studio`
+## 🏗️ Project Structure
 
-### Authentication
+```
+cyberprobes-site/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (pages)/           # Page components
+│   │   ├── api/               # API routes
+│   │   ├── globals.css        # Global styles
+│   │   └── layout.tsx         # Root layout
+│   ├── components/            # Reusable components
+│   ├── lib/                   # Utility functions
+│   ├── providers/             # Context providers
+│   └── middleware.ts          # Next.js middleware
+├── prisma/                    # Database schema and migrations
+├── public/                    # Static assets
+├── .github/                   # GitHub Actions workflows
+└── package.json
+```
 
-- Authentication is managed with NextAuth.js
-- User registration: POST to `/api/register`
-- User login: Handled by NextAuth.js
+## 🔧 Configuration
 
-### Content Management
+### Environment Variables
 
-- Admin users can access `/dashboard/admin` to manage content
-- Upload and manage videos
-- Create and edit blog posts
+Create a `.env.local` file with the following variables:
 
-## Deployment
+```env
+# Database
+DATABASE_URL="file:./prisma/dev.db"
 
-For production deployment:
+# NextAuth
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
 
-1. Build the application
-   ```
-   npm run build
-   ```
+# Base URL
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
-2. Start the production server
-   ```
-   npm start
-   ```
+# reCAPTCHA (optional)
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY="your-recaptcha-site-key"
+RECAPTCHA_SECRET_KEY="your-recaptcha-secret-key"
+```
 
-## License
+### Database Setup
 
-[MIT License](LICENSE)
+The project uses SQLite with Prisma ORM. To set up the database:
 
-## Contact
+1. Generate Prisma client: `npm run db:generate`
+2. Push schema to database: `npm run db:push`
+3. Seed with sample data: `npm run db:seed`
 
-For questions or support, please contact info@cyberprobes.in
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Set environment variables in Vercel dashboard
+4. Deploy automatically on push to main branch
+
+### Manual Deployment
+
+1. Build the project: `npm run build`
+2. Start the production server: `npm start`
+
+## 🔒 Security Features
+
+- **CSP Headers**: Content Security Policy for XSS protection
+- **HTTPS Redirect**: Automatic HTTPS redirect in production
+- **Input Sanitization**: Form input validation and sanitization
+- **reCAPTCHA**: Bot protection on contact forms
+- **Secure Headers**: X-Frame-Options, X-Content-Type-Options, etc.
+
+## 📊 Performance Features
+
+- **Image Optimization**: Next.js Image component with WebP/AVIF
+- **Bundle Optimization**: Tree shaking and code splitting
+- **Lazy Loading**: Images and components loaded on demand
+- **Caching**: Optimized caching strategies
+
+## 🎨 Design Features
+
+- **Dark Theme**: Professional dark color scheme
+- **Animations**: Smooth transitions and hover effects
+- **Responsive**: Mobile-first responsive design
+- **Typography**: Inter font for modern look
+- **Icons**: SVG icons for scalability
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+npm test
+```
+
+## 📈 Analytics
+
+The site is ready for analytics integration. Add your tracking codes to the layout component.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit your changes: `git commit -am 'Add new feature'`
+4. Push to the branch: `git push origin feature/new-feature`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+For support, email support@cyberprobes.com or create an issue in the repository.
+
+## 🔄 Changelog
+
+### v1.0.0
+- Initial release
+- Complete website with all features
+- SEO optimization
+- Security implementation
+- Performance optimization
+
+---
+
+**CyberProbes** - Securing your digital future, one investigation at a time.

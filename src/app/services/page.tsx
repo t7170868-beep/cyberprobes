@@ -1,5 +1,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Cybersecurity Services - Penetration Testing, Digital Forensics | CyberProbes",
+  description: "Comprehensive cybersecurity services including penetration testing, digital forensics, incident response, security consulting, and compliance services. 24/7 expert support.",
+  keywords: "penetration testing, digital forensics, incident response, security consulting, compliance services, cybersecurity training, malware analysis",
+  openGraph: {
+    title: "Cybersecurity Services - Penetration Testing, Digital Forensics | CyberProbes",
+    description: "Comprehensive cybersecurity services including penetration testing, digital forensics, incident response, security consulting, and compliance services. 24/7 expert support.",
+    url: '/services',
+    type: 'website',
+    images: [{
+      url: '/images/pentesting.jpg',
+      width: 1200,
+      height: 630,
+      alt: 'CyberProbes Cybersecurity Services',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Cybersecurity Services - Penetration Testing, Digital Forensics | CyberProbes",
+    description: "Comprehensive cybersecurity services including penetration testing, digital forensics, incident response, security consulting, and compliance services. 24/7 expert support.",
+    images: ['/images/pentesting.jpg'],
+  },
+  alternates: {
+    canonical: '/services',
+  },
+};
 
 export default function ServicesPage() {
   return (
@@ -227,7 +255,7 @@ export default function ServicesPage() {
               <div className="bg-yellow-100 text-yellow-800 inline-block p-2 rounded-md mb-4">Security Training</div>
               <h2 className="text-3xl font-bold mb-6">Empower Your Team with Security Knowledge</h2>
               <p className="text-gray-700 mb-4">
-                Our security training programs help build a security-conscious culture in your organization by educating 
+                Our security training programs help build a security-conscious culture in your organization by educating
                 employees on security best practices and threat awareness.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
@@ -250,6 +278,83 @@ export default function ServicesPage() {
                 <Image
                   src="/images/training.jpg"
                   alt="Security Training"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Incident Response */}
+        <div id="incident-response" className="scroll-mt-20">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="md:w-1/2">
+              <div className="bg-red-100 text-red-800 inline-block p-2 rounded-md mb-4">Incident Response</div>
+              <h2 className="text-3xl font-bold mb-6">Rapid Response to Security Incidents</h2>
+              <p className="text-gray-700 mb-4">
+                Our incident response team provides 24/7 support to help organizations quickly and effectively respond to
+                security incidents, minimizing damage and downtime.
+              </p>
+              <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+                <li>24/7 Emergency Response Hotline</li>
+                <li>Incident Triage and Assessment</li>
+                <li>Containment and Eradication</li>
+                <li>Evidence Collection and Analysis</li>
+                <li>Recovery and Restoration</li>
+                <li>Post-Incident Review and Reporting</li>
+              </ul>
+              <p className="text-gray-700 mb-6">
+                Our certified incident handlers follow industry best practices and can coordinate with law enforcement
+                when necessary.
+              </p>
+              <Link href="/contact" className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg">
+                Request Emergency Response
+              </Link>
+            </div>
+            <div className="md:w-1/2">
+              <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/incidentresponse.jpg"
+                  alt="Incident Response"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Compliance Services */}
+        <div id="compliance" className="scroll-mt-20">
+          <div className="flex flex-col md:flex-row-reverse items-center gap-12">
+            <div className="md:w-1/2">
+              <div className="bg-indigo-100 text-indigo-800 inline-block p-2 rounded-md mb-4">Compliance Services</div>
+              <h2 className="text-3xl font-bold mb-6">Meet Regulatory Requirements with Confidence</h2>
+              <p className="text-gray-700 mb-4">
+                Our compliance experts help organizations navigate complex regulatory landscapes and ensure adherence to
+                industry standards and legal requirements.
+              </p>
+              <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+                <li>GDPR Compliance Assessment</li>
+                <li>HIPAA Security Rule Implementation</li>
+                <li>PCI DSS Compliance</li>
+                <li>SOX Compliance Support</li>
+                <li>Industry-Specific Regulation Guidance</li>
+                <li>Compliance Audit Preparation</li>
+              </ul>
+              <p className="text-gray-700 mb-6">
+                We provide ongoing compliance monitoring and support to help you maintain compliance as regulations evolve.
+              </p>
+              <Link href="/contact" className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg">
+                Request Compliance Services
+              </Link>
+            </div>
+            <div className="md:w-1/2">
+              <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/compliance.jpg"
+                  alt="Compliance Services"
                   fill
                   style={{ objectFit: 'cover' }}
                 />

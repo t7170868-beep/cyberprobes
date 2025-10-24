@@ -30,8 +30,8 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/services#pentesting" className="text-gray-400 dark:text-gray-300 hover:text-white">Penetration Testing</Link></li>
               <li><Link href="/services#forensics" className="text-gray-400 dark:text-gray-300 hover:text-white">Digital Forensics</Link></li>
-              <li><Link href="/services#consulting" className="text-gray-400 dark:text-gray-300 hover:text-white">Security Consulting</Link></li>
-              <li><Link href="/services#training" className="text-gray-400 dark:text-gray-300 hover:text-white">Security Training</Link></li>
+              <li><Link href="/services#incident-response" className="text-gray-400 dark:text-gray-300 hover:text-white">Incident Response</Link></li>
+              <li><Link href="/dashboard/cases" className="text-gray-400 dark:text-gray-300 hover:text-white">Case Portal</Link></li>
             </ul>
           </div>
           
@@ -56,8 +56,18 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400 dark:text-gray-300">
-          <p>&copy; {new Date().getFullYear()} CyberProbes. All rights reserved.</p>
+        <div className="border-t border-gray-800 mt-8 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-gray-400 dark:text-gray-300 mb-4 md:mb-0">
+              <p>&copy; {new Date().getFullYear()} CyberProbes. All rights reserved.</p>
+            </div>
+            <div className="flex flex-wrap justify-center md:justify-end space-x-4 text-sm">
+              <Link href="/legal/privacy-policy" className="text-gray-400 dark:text-gray-300 hover:text-white">Privacy Policy</Link>
+              <Link href="/legal/chain-of-custody" className="text-gray-400 dark:text-gray-300 hover:text-white">Chain of Custody</Link>
+              <Link href="/legal/incident-response-sla" className="text-gray-400 dark:text-gray-300 hover:text-white">SLA</Link>
+              <Link href="/legal/vulnerability-disclosure" className="text-gray-400 dark:text-gray-300 hover:text-white">Security</Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

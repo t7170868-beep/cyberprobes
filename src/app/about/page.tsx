@@ -1,180 +1,164 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "About CyberProbes - Digital Forensics & Cybersecurity Experts",
+  description: "Learn about CyberProbes, a team of dedicated cybersecurity professionals committed to protecting your digital assets with integrity, innovation, and client partnership.",
+  keywords: "about cyberprobes, cybersecurity team, digital forensics experts, security professionals, cyber investigation",
+  openGraph: {
+    title: "About CyberProbes - Digital Forensics & Cybersecurity Experts",
+    description: "Learn about CyberProbes, a team of dedicated cybersecurity professionals committed to protecting your digital assets with integrity, innovation, and client partnership.",
+    url: '/about',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "About CyberProbes - Digital Forensics & Cybersecurity Experts",
+    description: "Learn about CyberProbes, a team of dedicated cybersecurity professionals committed to protecting your digital assets with integrity, innovation, and client partnership.",
+  },
+  alternates: {
+    canonical: '/about',
+  },
+};
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-bg-primary">
       {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-gray-100">About CyberProbes</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          We are a team of dedicated cybersecurity professionals committed to protecting your digital assets and securing your future.
-        </p>
-      </div>
+      <section className="py-20 md:py-32 bg-bg-secondary relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 cyber-grid opacity-30"></div>
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyber-blue/5 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h1 className="font-orbitron text-4xl md:text-6xl font-bold cyber-text mb-6">About CyberProbes</h1>
+            <p className="font-rajdhani text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto">
+              We are a team of dedicated cybersecurity professionals committed to protecting your digital assets and securing your future.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Our Story */}
-      <div className="flex flex-col md:flex-row items-center mb-20">
-        <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
-          <div className="rounded-lg overflow-hidden shadow-xl">
-            <div className="relative h-96 w-full">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-80 rounded-lg"></div>
-              <div className="absolute inset-0 flex items-center justify-center text-white text-5xl font-bold">CyberProbes</div>
+      <section className="py-16 md:py-24 bg-bg-tertiary relative overflow-hidden">
+        <div className="absolute inset-0 cyber-grid opacity-20"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-purple/5 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+              <div className="glass-card rounded-2xl overflow-hidden p-8">
+                <div className="relative h-96 w-full rounded-xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyber-blue to-neon-purple opacity-80"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="font-orbitron text-5xl font-bold text-white cyber-glow">CyberProbes</span>
+                  </div>
+                  <div className="absolute inset-0 cyber-grid opacity-30"></div>
+                </div>
+              </div>
+            </div>
+            <div className="md:w-1/2">
+              <h2 className="font-orbitron text-3xl md:text-4xl font-bold cyber-text mb-6">Our Story</h2>
+              <p className="font-inter text-gray-300 mb-6 leading-relaxed">
+                CyberProbes was founded to tackle the growing challenges of digital security and forensics in an increasingly interconnected world. Our founder, Mr.Adash Srivastava, driven by a passion for technology and a commitment to protecting digital information, saw the urgent need for a trusted partner in unraveling digital complexities.
+              </p>
+              <p className="font-inter text-gray-300 mb-6 leading-relaxed">
+                From day one, CyberProbes has stood on the pillars of integrity, trust, and innovation. Backed by a team of skilled professionals, we aim to bridge the gap between inexperience and expertise in the cybersecurity space.
+              </p>
+              <p className="font-inter text-gray-300 mb-6 leading-relaxed">
+                Our mission is simple yet vital: to safeguard data, uncover hidden truths, and create a safer digital landscape. As threats evolve, so do we—continuously learning, innovating, and upholding the highest ethical standards.
+              </p>
+              <p className="font-inter text-gray-300 mb-6 leading-relaxed">
+                Join us as we lead the way in digital forensics, empowering individuals and organizations with clarity, confidence, and truth in the digital age.
+              </p>
+              <Link 
+                href="/contact" 
+                className="magnetic-button glass-button px-8 py-4 rounded-lg font-rajdhani font-semibold text-lg text-white hover:text-black transition-colors inline-flex items-center"
+              >
+                <span className="relative z-10">Get in Touch</span>
+                <span className="ml-2">→</span>
+              </Link>
             </div>
           </div>
         </div>
-        <div className="md:w-1/2">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Our Story</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Founded in 2018, CyberProbes began with a simple mission: to make cybersecurity accessible and effective for businesses of all sizes. 
-            Our founders, with over 30 years of combined experience in information security, recognized that many organizations struggle to protect 
-            themselves in an increasingly complex digital landscape.
-          </p>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            We've since grown into a comprehensive security partner for hundreds of clients across multiple industries, bringing enterprise-grade 
-            security practices to organizations that previously couldn't access such expertise.
-          </p>
-          <Link 
-            href="/contact" 
-            className="inline-block px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition duration-300"
-          >
-            Get in Touch
-          </Link>
-        </div>
-      </div>
+      </section>
 
       {/* Core Values */}
-      <div className="mb-20">
-        <h2 className="text-3xl font-bold mb-10 text-center text-gray-900 dark:text-white">Our Core Values</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md hover:shadow-lg transition">
-            <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 p-3 inline-flex rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Integrity</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              We operate with complete transparency and ethical standards. Your trust is our most valuable asset.
-            </p>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md hover:shadow-lg transition">
-            <div className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-3 inline-flex rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Innovation</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Cybersecurity threats evolve daily. We stay ahead with continuous research and cutting-edge approaches.
-            </p>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md hover:shadow-lg transition">
-            <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 p-3 inline-flex rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Client Partnership</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Your security is our priority. We work closely with you to build solutions that fit your specific needs.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Team Section */}
-      <div className="mb-20">
-        <h2 className="text-3xl font-bold mb-10 text-center text-gray-900 dark:text-white">Meet Our Leadership Team</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Team Member 1 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            <div className="h-60 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-              <svg className="h-24 w-24 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 14.75c3.17 0 5.75-2.58 5.75-5.75S15.17 3.25 12 3.25 6.25 5.83 6.25 9s2.58 5.75 5.75 5.75zm0-10c2.34 0 4.25 1.91 4.25 4.25s-1.91 4.25-4.25 4.25S7.75 11.34 7.75 9 9.66 4.75 12 4.75zm6 11.5c0-.53-.11-1.04-.3-1.5H6.3c-.19.46-.3.97-.3 1.5V17h12v-.75z" />
-              </svg>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">Sarah Johnson</h3>
-              <p className="text-blue-600 dark:text-blue-400 mb-4">Chief Executive Officer</p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                Former CISO with 15+ years of experience in financial services cybersecurity. Leading CyberProbes' vision of accessible security.
+      <section className="py-16 md:py-24 bg-bg-secondary relative overflow-hidden">
+        <div className="absolute inset-0 cyber-grid opacity-20"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/5 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <h2 className="font-orbitron text-3xl md:text-5xl font-bold cyber-text mb-12 text-center">Our Core Values</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="glass-card p-8 rounded-xl magnetic-button group">
+              <div className="w-16 h-16 glow-border rounded-xl flex items-center justify-center mb-6 group-hover:bg-neon-pink/10 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-neon-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="font-orbitron text-xl font-bold text-white mb-4">Integrity</h3>
+              <p className="font-inter text-gray-300">
+                We operate with complete transparency and ethical standards. Your trust is our most valuable asset.
               </p>
             </div>
-          </div>
-          
-          {/* Team Member 2 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            <div className="h-60 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-              <svg className="h-24 w-24 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 14.75c3.17 0 5.75-2.58 5.75-5.75S15.17 3.25 12 3.25 6.25 5.83 6.25 9s2.58 5.75 5.75 5.75zm0-10c2.34 0 4.25 1.91 4.25 4.25s-1.91 4.25-4.25 4.25S7.75 11.34 7.75 9 9.66 4.75 12 4.75zm6 11.5c0-.53-.11-1.04-.3-1.5H6.3c-.19.46-.3.97-.3 1.5V17h12v-.75z" />
-              </svg>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">Michael Chen</h3>
-              <p className="text-blue-600 dark:text-blue-400 mb-4">Chief Technology Officer</p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                Expert in cryptography and secure systems design with background in leading security research at major tech companies.
+            
+            <div className="glass-card p-8 rounded-xl magnetic-button group">
+              <div className="w-16 h-16 glow-border rounded-xl flex items-center justify-center mb-6 group-hover:bg-cyber-blue/10 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyber-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-orbitron text-xl font-bold text-white mb-4">Innovation</h3>
+              <p className="font-inter text-gray-300">
+                Cybersecurity threats evolve daily. We stay ahead with continuous research and cutting-edge approaches.
               </p>
             </div>
-          </div>
-          
-          {/* Team Member 3 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            <div className="h-60 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-              <svg className="h-24 w-24 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 14.75c3.17 0 5.75-2.58 5.75-5.75S15.17 3.25 12 3.25 6.25 5.83 6.25 9s2.58 5.75 5.75 5.75zm0-10c2.34 0 4.25 1.91 4.25 4.25s-1.91 4.25-4.25 4.25S7.75 11.34 7.75 9 9.66 4.75 12 4.75zm6 11.5c0-.53-.11-1.04-.3-1.5H6.3c-.19.46-.3.97-.3 1.5V17h12v-.75z" />
-              </svg>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">Emily Rodriguez</h3>
-              <p className="text-blue-600 dark:text-blue-400 mb-4">Director of Forensics</p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                Former law enforcement digital forensics specialist with experience in investigating cybercrime and recovering digital evidence.
-              </p>
-            </div>
-          </div>
-          
-          {/* Team Member 4 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            <div className="h-60 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-              <svg className="h-24 w-24 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 14.75c3.17 0 5.75-2.58 5.75-5.75S15.17 3.25 12 3.25 6.25 5.83 6.25 9s2.58 5.75 5.75 5.75zm0-10c2.34 0 4.25 1.91 4.25 4.25s-1.91 4.25-4.25 4.25S7.75 11.34 7.75 9 9.66 4.75 12 4.75zm6 11.5c0-.53-.11-1.04-.3-1.5H6.3c-.19.46-.3.97-.3 1.5V17h12v-.75z" />
-              </svg>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">David Okafor</h3>
-              <p className="text-blue-600 dark:text-blue-400 mb-4">Lead Security Consultant</p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                Certified ethical hacker specialized in red teaming and adversarial simulation for organizations of all sizes.
+            
+            <div className="glass-card p-8 rounded-xl magnetic-button group">
+              <div className="w-16 h-16 glow-border rounded-xl flex items-center justify-center mb-6 group-hover:bg-neon-green/10 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-neon-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="font-orbitron text-xl font-bold text-white mb-4">Client Partnership</h3>
+              <p className="font-inter text-gray-300">
+                Your security is our priority. We work closely with you to build solutions that fit your specific needs.
               </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-10 text-center">
-        <h2 className="text-3xl font-bold mb-4 text-white">Ready to secure your digital future?</h2>
-        <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-          Our team of experts is ready to help you build a comprehensive security strategy tailored to your organization's unique needs.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link 
-            href="/services" 
-            className="px-6 py-3 bg-white text-blue-700 font-medium rounded-lg hover:bg-gray-100 transition duration-300"
-          >
-            Our Services
-          </Link>
-          <Link 
-            href="/contact" 
-            className="px-6 py-3 bg-transparent border border-white text-white font-medium rounded-lg hover:bg-white/10 transition duration-300"
-          >
-            Contact Us
-          </Link>
+      <section className="py-16 md:py-24 bg-bg-tertiary relative overflow-hidden">
+        <div className="absolute inset-0 cyber-grid opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-neon-purple/5 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="glass-card p-12 rounded-2xl text-center">
+            <h2 className="font-orbitron text-3xl md:text-4xl font-bold cyber-text mb-6">Ready to secure your digital future?</h2>
+            <p className="font-rajdhani text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+              Our team of experts is ready to help you build a comprehensive security strategy tailored to your organization's unique needs.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Link 
+                href="/services" 
+                className="magnetic-button glass-button px-8 py-4 rounded-lg font-rajdhani font-semibold text-lg text-white hover:text-black transition-colors"
+              >
+                <span className="relative z-10">Our Services</span>
+              </Link>
+              <Link 
+                href="/contact" 
+                className="magnetic-button glow-border px-8 py-4 rounded-lg font-rajdhani font-semibold text-lg text-cyber-blue hover:text-white transition-colors"
+              >
+                <span className="relative z-10">Contact Us</span>
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 } 

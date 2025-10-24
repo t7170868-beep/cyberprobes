@@ -1,6 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Metadata } from 'next';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+// Note: This metadata will be applied at the layout level since this is a client component
+// For client components, metadata should be defined in the parent layout or a separate metadata file
 import Link from 'next/link';
 
 export default function ContactPage() {
@@ -16,14 +21,92 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Sanitize input values to prevent invalid characters
+    if (name === 'name') {
+      // Only allow letters, spaces, periods, hyphens, and apostrophes
+      const sanitizedValue = value.replace(/[^A-Za-z\s\.\-']/g, '');
+      setFormData(prev => ({ ...prev, [name]: sanitizedValue }));
+    } else if (name === 'phone') {
+      // Only allow numbers, parentheses, hyphens, spaces, and plus
+      const sanitizedValue = value.replace(/[^0-9()\-\s+]/g, '');
+      setFormData(prev => ({ ...prev, [name]: sanitizedValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
+    // Clear error for this field when user types
+    if (formErrors[name as keyof typeof formErrors]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    }
+
+    // Validate as user types
+    if (name === 'name') {
+      // Check if name contains any numbers
+      if (/\d/.test(value)) {
+        setFormErrors(prev => ({ ...prev, name: 'Name should not contain numbers' }));
+      }
+    } else if (name === 'email') {
+      // Validate email format
+      if (value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+        setFormErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+      }
+    } else if (name === 'phone') {
+      // Validate phone number (optional) - only allow numbers, parentheses, hyphens, spaces, and plus
+      if (value && !/^[0-9()\-\s+]+$/.test(value)) {
+        setFormErrors(prev => ({ ...prev, phone: 'Phone number should only contain numbers, parentheses, hyphens, spaces, and plus sign' }));
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check reCAPTCHA
+    if (!recaptchaToken) {
+      setSubmitError('Please complete the reCAPTCHA verification.');
+      return;
+    }
+    
+    // Validate form before submission
+    let hasErrors = false;
+    const newErrors = { name: '', email: '', phone: '' };
+    
+    // Name validation
+    if (/\d/.test(formData.name)) {
+      newErrors.name = 'Name should not contain numbers';
+      hasErrors = true;
+    }
+    
+    // Email validation
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+      hasErrors = true;
+    }
+    
+    // Phone validation (if provided)
+    if (formData.phone && !/^[0-9()\-\s+]{10,15}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+      hasErrors = true;
+    }
+    
+    setFormErrors(newErrors);
+    
+    // Stop submission if there are errors
+    if (hasErrors) {
+      return;
+    }
+    
     setIsSubmitting(true);
     setSubmitError('');
     
@@ -39,6 +122,11 @@ export default function ContactPage() {
         message: '',
         service: '',
       });
+      // Reset reCAPTCHA
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
     } catch (error) {
       setSubmitError('Something went wrong. Please try again later.');
     } finally {
@@ -73,7 +161,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">Phone</h3>
                     <p className="text-gray-600 dark:text-gray-300 mt-1">7007351691</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Monday-Friday, 9am-5pm EST</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Monday-Saturday, 9:00am-10:00pm IST</p>
                   </div>
                 </div>
                 
@@ -172,9 +260,15 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        pattern="^[A-Za-z\s\.\-']+$"
+                        title="Name should only contain letters, spaces, periods, hyphens, or apostrophes"
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="Your name"
+                        maxLength={50}
                       />
+                      {formErrors.name && (
+                        <p className="text-red-600 dark:text-red-400 text-sm mt-1">{formErrors.name}</p>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
@@ -185,9 +279,14 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                        title="Please enter a valid email address"
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="your.email@example.com"
                       />
+                      {formErrors.email && (
+                        <p className="text-red-600 dark:text-red-400 text-sm mt-1">{formErrors.email}</p>
+                      )}
                     </div>
                   </div>
                   
@@ -200,9 +299,15 @@ export default function ContactPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        pattern="^[0-9()\-\s+]+$"
+                        title="Phone number should only contain numbers, parentheses, hyphens, spaces, and plus sign"
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="(555) 123-4567"
+                        maxLength={15}
                       />
+                      {formErrors.phone && (
+                        <p className="text-red-600 dark:text-red-400 text-sm mt-1">{formErrors.phone}</p>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="company" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name</label>
@@ -256,6 +361,17 @@ export default function ContactPage() {
                       {submitError}
                     </div>
                   )}
+                  
+                  {/* reCAPTCHA */}
+                  <div className="flex justify-center">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'} // Test key
+                      onChange={(token) => setRecaptchaToken(token)}
+                      onExpired={() => setRecaptchaToken(null)}
+                      theme="light"
+                    />
+                  </div>
                   
                   <div>
                     <button

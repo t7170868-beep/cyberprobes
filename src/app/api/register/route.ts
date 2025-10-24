@@ -2,13 +2,25 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
+    // Check if request is from an authenticated admin
+    const session = await getServerSession(authOptions);
+    
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { message: "Unauthorized: Only administrators can create new accounts" },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
-    const { name, email, password } = body;
+    const { name, email, password, role = 'USER' } = body;
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -41,6 +53,7 @@ export async function POST(request: Request) {
         name,
         email,
         password: hashedPassword,
+        role: role,
       },
     });
 
