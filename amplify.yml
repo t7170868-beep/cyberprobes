@@ -3,7 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - rm -rf node_modules package-lock.json
+        - npm install
         - npx prisma generate --schema=./prisma/schema.prisma
     build:
       commands:
@@ -14,6 +15,5 @@ frontend:
       - '**/*'
   cache:
     paths:
-      - node_modules/**/*
       - .next/cache/**/*
 
