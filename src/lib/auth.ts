@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { User } from "@prisma/client";
+import { MongoClient } from "mongodb";
 
 // Extend the default session and JWT types
 declare module "next-auth" {
@@ -39,49 +40,90 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email and password are required");
         }
 
+        let mongoClient: MongoClient | null = null;
+
         try {
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
-          // Find user by email
-          const user = await prisma.user.findUnique({
-            where: {
-              email: normalizedEmail
+          console.log(`🔍 Attempting login for: ${normalizedEmail}`);
+
+          // Try Prisma first
+          try {
+            const user = await prisma.user.findUnique({
+              where: { email: normalizedEmail }
+            });
+
+            if (user && user.password) {
+              const isPasswordValid = await bcrypt.compare(
+                credentials.password,
+                user.password
+              );
+
+              if (isPasswordValid) {
+                console.log(`✅ Prisma login successful for: ${normalizedEmail}`);
+                return {
+                  id: user.id,
+                  email: user.email,
+                  name: user.name,
+                  role: user.role
+                } as any;
+              }
             }
-          });
+          } catch (prismaError) {
+            console.log(`⚠️  Prisma failed, trying direct MongoDB:`, prismaError);
+          }
+
+          // Fallback to direct MongoDB connection
+          if (!process.env.DATABASE_URL) {
+            throw new Error("DATABASE_URL not configured");
+          }
+
+          console.log(`🔌 Connecting to MongoDB directly...`);
+          mongoClient = new MongoClient(process.env.DATABASE_URL);
+          await mongoClient.connect();
+          
+          const db = mongoClient.db('cyberprobes');
+          const usersCollection = db.collection('User');
+          
+          const user = await usersCollection.findOne({ email: normalizedEmail });
 
           if (!user) {
-            console.log(`No user found for email: ${normalizedEmail}`);
+            console.log(`❌ No user found for: ${normalizedEmail}`);
             throw new Error("Invalid credentials");
           }
 
           if (!user.password) {
-            console.log(`User found but no password set for email: ${normalizedEmail}`);
+            console.log(`❌ No password set for: ${normalizedEmail}`);
             throw new Error("Account requires password reset");
           }
 
-          try {
-            // Compare passwords
-            const isPasswordValid = await bcrypt.compare(
-              credentials.password,
-              user.password
-            );
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
 
-            if (!isPasswordValid) {
-              console.log(`Invalid password for user: ${normalizedEmail}`);
-              throw new Error("Invalid credentials");
-            }
-
-            console.log(`Login successful for: ${normalizedEmail}, role: ${user.role}`);
-            return user;
-          } catch (bcryptError) {
-            console.error("Password comparison error:", bcryptError);
-            throw new Error("Authentication error");
+          if (!isPasswordValid) {
+            console.log(`❌ Invalid password for: ${normalizedEmail}`);
+            throw new Error("Invalid credentials");
           }
+
+          console.log(`✅ MongoDB login successful for: ${normalizedEmail}`);
+          
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role
+          } as any;
+
         } catch (error) {
-          console.error("Authorization error:", error);
-          // Always return a generic error message to avoid security information disclosure
+          console.error("❌ Authorization error:", error);
           throw new Error("Invalid credentials");
+        } finally {
+          if (mongoClient) {
+            await mongoClient.close().catch(() => {});
+          }
         }
       }
     })
