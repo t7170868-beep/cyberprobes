@@ -1,9 +1,7 @@
-import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { User } from "@prisma/client";
-import { MongoClient } from "mongodb";
+import { PrismaClient } from "@prisma/client";
 
 // Extend the default session and JWT types
 declare module "next-auth" {
@@ -37,81 +35,56 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           console.log("Missing credentials");
-          throw new Error("Email and password are required");
+          return null;
         }
 
-        let mongoClient: MongoClient | null = null;
+        // Create a fresh Prisma client for each request
+        const prisma = new PrismaClient({
+          datasources: {
+            db: {
+              url: process.env.DATABASE_URL
+            }
+          }
+        });
 
         try {
+          console.log(`🔍 Attempting login for: ${credentials.email}`);
+
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
-          console.log(`🔍 Attempting login for: ${normalizedEmail}`);
-
-          // Try Prisma first
-          try {
-            const user = await prisma.user.findUnique({
-              where: { email: normalizedEmail }
-            });
-
-            if (user && user.password) {
-              const isPasswordValid = await bcrypt.compare(
-                credentials.password,
-                user.password
-              );
-
-              if (isPasswordValid) {
-                console.log(`✅ Prisma login successful for: ${normalizedEmail}`);
-                return {
-                  id: user.id,
-                  email: user.email,
-                  name: user.name,
-                  role: user.role
-                } as any;
-              }
+          // Find user by email
+          const user = await prisma.user.findUnique({
+            where: {
+              email: normalizedEmail
             }
-          } catch (prismaError) {
-            console.log(`⚠️  Prisma failed, trying direct MongoDB:`, prismaError);
-          }
-
-          // Fallback to direct MongoDB connection
-          if (!process.env.DATABASE_URL) {
-            throw new Error("DATABASE_URL not configured");
-          }
-
-          console.log(`🔌 Connecting to MongoDB directly...`);
-          mongoClient = new MongoClient(process.env.DATABASE_URL);
-          await mongoClient.connect();
-          
-          const db = mongoClient.db('cyberprobes');
-          const usersCollection = db.collection('User');
-          
-          const user = await usersCollection.findOne({ email: normalizedEmail });
+          });
 
           if (!user) {
-            console.log(`❌ No user found for: ${normalizedEmail}`);
-            throw new Error("Invalid credentials");
+            console.log(`❌ No user found for email: ${normalizedEmail}`);
+            return null;
           }
 
           if (!user.password) {
-            console.log(`❌ No password set for: ${normalizedEmail}`);
-            throw new Error("Account requires password reset");
+            console.log(`❌ User found but no password set for email: ${normalizedEmail}`);
+            return null;
           }
 
+          // Compare passwords
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.password
           );
 
           if (!isPasswordValid) {
-            console.log(`❌ Invalid password for: ${normalizedEmail}`);
-            throw new Error("Invalid credentials");
+            console.log(`❌ Invalid password for user: ${normalizedEmail}`);
+            return null;
           }
 
-          console.log(`✅ MongoDB login successful for: ${normalizedEmail}`);
+          console.log(`✅ Login successful for: ${normalizedEmail}, role: ${user.role}`);
           
           return {
-            id: user._id.toString(),
+            id: user.id,
             email: user.email,
             name: user.name,
             role: user.role
@@ -119,11 +92,9 @@ export const authOptions: NextAuthOptions = {
 
         } catch (error) {
           console.error("❌ Authorization error:", error);
-          throw new Error("Invalid credentials");
+          return null;
         } finally {
-          if (mongoClient) {
-            await mongoClient.close().catch(() => {});
-          }
+          await prisma.$disconnect();
         }
       }
     })
