@@ -38,11 +38,21 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Get DATABASE_URL
+        const databaseUrl = process.env.DATABASE_URL;
+        
+        if (!databaseUrl) {
+          console.error("❌ DATABASE_URL is not defined!");
+          return null;
+        }
+
+        console.log(`🔌 Database URL configured: ${databaseUrl.substring(0, 30)}...`);
+
         // Create a fresh Prisma client for each request
         const prisma = new PrismaClient({
           datasources: {
             db: {
-              url: process.env.DATABASE_URL
+              url: databaseUrl
             }
           }
         });
