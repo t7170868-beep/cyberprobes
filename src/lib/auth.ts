@@ -38,73 +38,50 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // Get DATABASE_URL
-        const databaseUrl = process.env.DATABASE_URL;
-        
-        if (!databaseUrl) {
-          console.error("❌ DATABASE_URL is not defined!");
-          return null;
-        }
-
-        console.log(`🔌 Database URL configured: ${databaseUrl.substring(0, 30)}...`);
-
-        // Create a fresh Prisma client for each request
-        const prisma = new PrismaClient({
-          datasources: {
-            db: {
-              url: databaseUrl
-            }
-          }
-        });
-
         try {
           console.log(`🔍 Attempting login for: ${credentials.email}`);
 
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
-          // Find user by email
-          const user = await prisma.user.findUnique({
-            where: {
-              email: normalizedEmail
-            }
+          // Call our API endpoint to validate credentials
+          const baseUrl = process.env.NEXTAUTH_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com';
+          
+          const response = await fetch(`${baseUrl}/api/auth/validate`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: normalizedEmail,
+              password: credentials.password
+            })
           });
 
-          if (!user) {
-            console.log(`❌ No user found for email: ${normalizedEmail}`);
+          if (!response.ok) {
+            console.log(`❌ Authentication failed for: ${normalizedEmail}`);
             return null;
           }
 
-          if (!user.password) {
-            console.log(`❌ User found but no password set for email: ${normalizedEmail}`);
+          const userData = await response.json();
+          
+          if (!userData || !userData.id) {
+            console.log(`❌ Invalid user data returned`);
             return null;
           }
 
-          // Compare passwords
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isPasswordValid) {
-            console.log(`❌ Invalid password for user: ${normalizedEmail}`);
-            return null;
-          }
-
-          console.log(`✅ Login successful for: ${normalizedEmail}, role: ${user.role}`);
+          console.log(`✅ Login successful for: ${normalizedEmail}`);
           
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role
           } as any;
 
         } catch (error) {
           console.error("❌ Authorization error:", error);
           return null;
-        } finally {
-          await prisma.$disconnect();
         }
       }
     })
