@@ -1,15 +1,14 @@
 generator client {
   provider = "prisma-client-js"
-  engineType = "binary"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String   @unique
   password  String
@@ -19,7 +18,7 @@ model User {
 }
 
 model Blog {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String
   slug      String   @unique
@@ -30,7 +29,7 @@ model Blog {
 }
 
 model Video {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
   url         String
@@ -40,7 +39,7 @@ model Video {
 }
 
 model Course {
-  id          String           @id @default(uuid())
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   slug        String           @unique
@@ -51,18 +50,18 @@ model Course {
 }
 
 model CourseMaterial {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   type      String
   url       String
-  courseId  String
+  courseId  String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Contact {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String
   subject   String?
@@ -72,7 +71,7 @@ model Contact {
 
 // Case Management for Digital Forensics
 model Case {
-  id                  String         @id @default(uuid())
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
   caseNumber          String         @unique
   title               String
   description         String
@@ -94,8 +93,8 @@ model Case {
 }
 
 model EvidenceFile {
-  id         String   @id @default(uuid())
-  caseId     String
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  caseId     String   @db.ObjectId
   fileName   String
   fileSize   Int
   fileType   String
@@ -108,7 +107,7 @@ model EvidenceFile {
 
 // Security audit logging
 model AuditLog {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   timestamp DateTime @default(now())
   action    String   // AUTH_ATTEMPT, ADMIN_*, SECURITY_*
   userId    String?  // May be null for some security events
