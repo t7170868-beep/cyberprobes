@@ -16,31 +16,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const databaseUrl = process.env.DATABASE_URL;
+    console.log(`🔍 Testing login for: ${email}`);
 
-    if (!databaseUrl) {
-      console.error('DATABASE_URL is not defined');
-      return NextResponse.json(
-        { error: 'Database configuration error' },
-        { status: 500 }
-      );
-    }
+    // Use Prisma instead of direct MongoDB connection
+    prisma = new PrismaClient();
+    await prisma.$connect();
 
-    console.log(`🔌 Connecting to PostgreSQL for user: ${email}`);
-
-    // Connect to PostgreSQL via Prisma
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: databaseUrl
-        }
-      }
-    });
-
-    // Find user
-    const user = await prisma.user.findUnique({ 
-      where: {
-        email: email.toLowerCase().trim()
+    // Find user using Prisma
+    const user = await prisma.user.findFirst({
+      where: { 
+        email: email.toLowerCase().trim() 
       }
     });
 
@@ -82,7 +67,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Validation error:', error);
+    console.error('❌ Test login error:', error);
     return NextResponse.json(
       { error: 'Authentication failed' },
       { status: 500 }
@@ -93,4 +78,3 @@ export async function POST(request: Request) {
     }
   }
 }
-

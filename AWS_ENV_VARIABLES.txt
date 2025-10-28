@@ -1,0 +1,54 @@
+AWS AMPLIFY ENVIRONMENT VARIABLES - COPY PASTE READY
+========================================================
+
+⚠️ IMPORTANT: Ek-ek karke "Add" button se add karo!
+
+---
+
+Variable 1:
+Key: DATABASE_URL
+Value: mongodb+srv://t7170868_db_user:admin123@cluster0.pnugpz0.mongodb.net/cyberprobes?retryWrites=true&w=majority
+
+---
+
+Variable 2:
+Key: NEXTAUTH_SECRET
+Value: cyberprobes-secret-key-12345678901234567890123456789012
+
+---
+
+Variable 3:
+Key: NEXTAUTH_URL
+Value: [YAHAN APNI AMPLIFY APP KA URL DAALO]
+Example: https://main.d123456789.amplifyapp.com
+
+⚠️ Note: Apni app ka actual URL use karo!
+
+---
+
+Variable 4:
+Key: NODE_ENV
+Value: production
+
+---
+
+Variable 5:
+Key: JWT_SECRET
+Value: jwt-secret-key-cyberprobes-12345678901234567890
+
+---
+
+STEPS:
+1. AWS Amplify → Your App → Environment variables
+2. "Add variable" button click karo
+3. Key aur Value paste karo
+4. Save karo
+5. Redeploy hone do (5-10 min)
+6. Test karo: your-url.amplifyapp.com/auth/login
+
+Login credentials:
+Email: admin@cyberprobes.com
+Password: admin123
+
+========================================================
+

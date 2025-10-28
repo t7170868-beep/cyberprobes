@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { MongoClient } from 'mongodb';
 import bcrypt from 'bcrypt';
 
 export async function POST(request: Request) {
-  let prisma: PrismaClient | null = null;
+  let mongoClient: MongoClient | null = null;
 
   try {
     const body = await request.json();
@@ -16,33 +16,30 @@ export async function POST(request: Request) {
       );
     }
 
-    const databaseUrl = process.env.DATABASE_URL;
+    console.log(`🔍 Direct login attempt for: ${email}`);
 
-    if (!databaseUrl) {
-      console.error('DATABASE_URL is not defined');
-      return NextResponse.json(
-        { error: 'Database configuration error' },
-        { status: 500 }
-      );
+    // Hardcoded production MongoDB URL
+    const databaseUrl = "mongodb+srv://t7170868_db_user:admin123@cluster0.pnugpz0.mongodb.net/cyberprobes?retryWrites=true&w=majority";
+
+    // Connect to MongoDB directly
+    mongoClient = new MongoClient(databaseUrl);
+    await mongoClient.connect();
+
+    const db = mongoClient.db('cyberprobes');
+    
+    // Try both collection names
+    let usersCollection = db.collection('user');
+    let user = await usersCollection.findOne({ 
+      email: email.toLowerCase().trim() 
+    });
+
+    // If not found in 'user', try 'User'
+    if (!user) {
+      usersCollection = db.collection('User');
+      user = await usersCollection.findOne({ 
+        email: email.toLowerCase().trim() 
+      });
     }
-
-    console.log(`🔌 Connecting to PostgreSQL for user: ${email}`);
-
-    // Connect to PostgreSQL via Prisma
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: databaseUrl
-        }
-      }
-    });
-
-    // Find user
-    const user = await prisma.user.findUnique({ 
-      where: {
-        email: email.toLowerCase().trim()
-      }
-    });
 
     if (!user) {
       console.log(`❌ User not found: ${email}`);
@@ -71,26 +68,25 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`✅ Authentication successful for: ${email}`);
+    console.log(`✅ Direct authentication successful for: ${email}`);
 
     // Return user data
     return NextResponse.json({
-      id: user.id,
+      id: user._id?.toString() || user.id,
       email: user.email,
       name: user.name,
       role: user.role
     });
 
   } catch (error) {
-    console.error('❌ Validation error:', error);
+    console.error('❌ Direct login error:', error);
     return NextResponse.json(
       { error: 'Authentication failed' },
       { status: 500 }
     );
   } finally {
-    if (prisma) {
-      await prisma.$disconnect();
+    if (mongoClient) {
+      await mongoClient.close();
     }
   }
 }
-
