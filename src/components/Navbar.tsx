@@ -60,22 +60,22 @@ export default function Navbar() {
               
               {session ? (
                 <>
-                  <Link href="/dashboard" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard')}`}>
+                  <Link href="/dashboard" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/dashboard')}`}>
                     Dashboard
                   </Link>
-                  <Link href="/dashboard/cases" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/dashboard/cases')}`}>
+                  <Link href="/dashboard/cases" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/dashboard/cases')}`}>
                     Cases
                   </Link>
                   <button 
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                    className="font-rajdhani font-medium text-gray-300 hover:text-cyber-blue transition-all duration-300"
                   >
                     Logout
                   </button>
                 </>
               ) : (
-                <Link href="/auth/login" className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/auth/login')}`}>
-                  Login / Register
+                <Link href="/courses" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/courses')}`}>
+                  Courses
                 </Link>
               )}
             </nav>
@@ -166,11 +166,11 @@ export default function Navbar() {
                 </>
               ) : (
                 <Link 
-                  href="/auth/login" 
-                  className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/auth/login')}`}
+                  href="/courses" 
+                  className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/courses')}`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Login / Register
+                  Courses
                 </Link>
               )}
             </nav>

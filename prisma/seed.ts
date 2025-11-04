@@ -242,36 +242,303 @@ APT detection and response requires a combination of advanced technology, skille
   ]);
   console.log(`Created ${videos.length} videos`);
 
-  // Create course
-  const course = await prisma.course.create({
+  // Create courses with modules and materials
+  const course1 = await prisma.course.create({
     data: {
       title: 'Digital Forensics Fundamentals',
-      description: 'Learn the basics of digital forensics and evidence collection.',
+      description: 'Master the essential techniques of digital forensics, from evidence collection to analysis and reporting. Learn industry-standard tools and methodologies.',
       slug: 'digital-forensics-fundamentals',
+      category: 'Digital Forensics',
+      level: 'Beginner',
+      duration: '8 Weeks',
+      price: 0,
+      instructor: 'Dr. Sarah Mitchell',
+      instructorBio: 'Former FBI Digital Forensics Expert with 15+ years of experience in cybercrime investigation.',
+      whatYoullLearn: JSON.stringify([
+        'Evidence collection and preservation techniques',
+        'File system analysis (NTFS, FAT, EXT)',
+        'Memory forensics and volatile data analysis',
+        'Network traffic analysis',
+        'Mobile device forensics',
+        'Report writing for legal proceedings'
+      ]),
+      prerequisites: JSON.stringify([
+        'Basic computer literacy',
+        'Understanding of file systems',
+        'Basic networking concepts'
+      ]),
+      skillsCovered: JSON.stringify([
+        'FTK Toolkit',
+        'EnCase',
+        'Autopsy',
+        'Wireshark',
+        'Volatility Framework'
+      ]),
+      certification: 'Certificate of Completion - Digital Forensics Fundamentals',
       published: true,
-    },
+      modules: {
+        create: [
+          {
+            title: 'Introduction to Digital Forensics',
+            description: 'Overview of digital forensics principles and methodologies',
+            order: 0,
+            duration: '2 hours',
+            materials: {
+              create: [
+                {
+                  title: 'What is Digital Forensics?',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '15 min',
+                  order: 0
+                },
+                {
+                  title: 'Forensic Process Overview',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '20 min',
+                  order: 1
+                },
+                {
+                  title: 'Legal Considerations',
+                  type: 'pdf',
+                  url: '/documents/legal-considerations.pdf',
+                  order: 2
+                }
+              ]
+            }
+          },
+          {
+            title: 'Evidence Collection & Preservation',
+            description: 'Learn proper evidence handling and chain of custody',
+            order: 1,
+            duration: '3 hours',
+            materials: {
+              create: [
+                {
+                  title: 'Chain of Custody Procedures',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '25 min',
+                  order: 0
+                },
+                {
+                  title: 'Write Blocking Techniques',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '18 min',
+                  order: 1
+                }
+              ]
+            }
+          },
+          {
+            title: 'File System Analysis',
+            description: 'Deep dive into NTFS, FAT, and EXT file systems',
+            order: 2,
+            duration: '4 hours',
+            materials: {
+              create: [
+                {
+                  title: 'NTFS Structure',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '30 min',
+                  order: 0
+                },
+                {
+                  title: 'Deleted File Recovery',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '35 min',
+                  order: 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
   });
 
-  // Create course materials
-  const materials = await Promise.all([
-    prisma.courseMaterial.create({
-      data: {
-        title: 'Introduction to Digital Forensics',
-        type: 'VIDEO',
-        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        courseId: course.id,
-      },
-    }),
-    prisma.courseMaterial.create({
-      data: {
-        title: 'Evidence Collection Procedures',
-        type: 'DOCUMENT',
-        url: '/documents/evidence-collection.pdf',
-        courseId: course.id,
-      },
-    }),
-  ]);
-  console.log(`Created course with ${materials.length} materials`);
+  const course2 = await prisma.course.create({
+    data: {
+      title: 'Advanced Ethical Hacking',
+      description: 'Learn advanced penetration testing techniques, exploit development, and ethical hacking methodologies used by professional security researchers.',
+      slug: 'advanced-ethical-hacking',
+      category: 'Ethical Hacking',
+      level: 'Expert',
+      duration: '12 Weeks',
+      price: 9999,
+      instructor: 'Alex Rodriguez',
+      instructorBio: 'CEH, OSCP certified ethical hacker with 10+ years in penetration testing.',
+      whatYoullLearn: JSON.stringify([
+        'Advanced penetration testing techniques',
+        'Web application security',
+        'Network exploitation',
+        'Post-exploitation strategies',
+        'Social engineering tactics',
+        'Report writing and remediation advice'
+      ]),
+      prerequisites: JSON.stringify([
+        'Strong Linux command line skills',
+        'Basic networking knowledge',
+        'Programming experience (Python/Bash)',
+        'Understanding of TCP/IP'
+      ]),
+      skillsCovered: JSON.stringify([
+        'Metasploit Framework',
+        'Burp Suite',
+        'Nmap',
+        'SQLMap',
+        'Social Engineering Toolkit'
+      ]),
+      certification: 'Advanced Ethical Hacking Professional Certificate',
+      published: true,
+      modules: {
+        create: [
+          {
+            title: 'Reconnaissance & Information Gathering',
+            description: 'Advanced OSINT and footprinting techniques',
+            order: 0,
+            duration: '3 hours',
+            materials: {
+              create: [
+                {
+                  title: 'OSINT Techniques',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '40 min',
+                  order: 0
+                },
+                {
+                  title: 'Active vs Passive Recon',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '35 min',
+                  order: 1
+                }
+              ]
+            }
+          },
+          {
+            title: 'Exploitation Techniques',
+            description: 'Learn to identify and exploit vulnerabilities',
+            order: 1,
+            duration: '5 hours',
+            materials: {
+              create: [
+                {
+                  title: 'Metasploit Mastery',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '45 min',
+                  order: 0
+                },
+                {
+                  title: 'Custom Exploit Development',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '60 min',
+                  order: 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  });
+
+  const course3 = await prisma.course.create({
+    data: {
+      title: 'Cloud Security for AWS & Azure',
+      description: 'Comprehensive guide to securing cloud infrastructure on AWS and Azure. Learn cloud security best practices, compliance, and threat mitigation.',
+      slug: 'cloud-security-aws-azure',
+      category: 'Cloud Security',
+      level: 'Intermediate',
+      duration: '10 Weeks',
+      price: 7999,
+      instructor: 'Maria Santos',
+      instructorBio: 'AWS & Azure Security Architect with enterprise cloud security experience.',
+      whatYoullLearn: JSON.stringify([
+        'Cloud security architecture',
+        'IAM and access control',
+        'Data encryption in cloud',
+        'Compliance and governance',
+        'Cloud security monitoring',
+        'Incident response in cloud environments'
+      ]),
+      prerequisites: JSON.stringify([
+        'Basic cloud computing knowledge',
+        'Understanding of networking',
+        'Familiarity with AWS or Azure'
+      ]),
+      skillsCovered: JSON.stringify([
+        'AWS Security Services',
+        'Azure Security Center',
+        'CloudTrail',
+        'IAM Policies',
+        'Security Groups & NACLs'
+      ]),
+      certification: 'Cloud Security Professional Certificate',
+      published: true,
+      modules: {
+        create: [
+          {
+            title: 'Cloud Security Fundamentals',
+            description: 'Understanding cloud security models and shared responsibility',
+            order: 0,
+            duration: '2.5 hours',
+            materials: {
+              create: [
+                {
+                  title: 'Cloud Security Models',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '30 min',
+                  order: 0
+                },
+                {
+                  title: 'Shared Responsibility Model',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '25 min',
+                  order: 1
+                }
+              ]
+            }
+          },
+          {
+            title: 'IAM & Access Management',
+            description: 'Secure identity and access management in the cloud',
+            order: 1,
+            duration: '4 hours',
+            materials: {
+              create: [
+                {
+                  title: 'IAM Best Practices',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '40 min',
+                  order: 0
+                },
+                {
+                  title: 'Multi-Factor Authentication',
+                  type: 'video',
+                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                  duration: '20 min',
+                  order: 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  });
+
+  console.log(`Created 3 courses with modules and materials`);
 }
 
 main()

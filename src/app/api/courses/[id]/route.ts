@@ -14,7 +14,15 @@ export async function GET(
     const course = await prisma.course.findUnique({
       where: { id },
       include: {
-        materials: true
+        materials: true,
+        modules: {
+          include: {
+            materials: {
+              orderBy: { order: 'asc' }
+            }
+          },
+          orderBy: { order: 'asc' }
+        }
       }
     });
 

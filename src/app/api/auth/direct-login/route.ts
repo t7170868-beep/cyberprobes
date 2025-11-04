@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 export async function POST(request: Request) {
-  let mongoClient: MongoClient | null = null;
+  let prisma: PrismaClient | null = null;
 
   try {
     const body = await request.json();
@@ -18,28 +18,16 @@ export async function POST(request: Request) {
 
     console.log(`🔍 Direct login attempt for: ${email}`);
 
-    // Hardcoded production MongoDB URL
-    const databaseUrl = "mongodb+srv://t7170868_db_user:admin123@cluster0.pnugpz0.mongodb.net/cyberprobes?retryWrites=true&w=majority";
+    // Use Prisma to connect to PostgreSQL (AWS RDS)
+    prisma = new PrismaClient();
+    await prisma.$connect();
 
-    // Connect to MongoDB directly
-    mongoClient = new MongoClient(databaseUrl);
-    await mongoClient.connect();
-
-    const db = mongoClient.db('cyberprobes');
-    
-    // Try both collection names
-    let usersCollection = db.collection('user');
-    let user = await usersCollection.findOne({ 
-      email: email.toLowerCase().trim() 
-    });
-
-    // If not found in 'user', try 'User'
-    if (!user) {
-      usersCollection = db.collection('User');
-      user = await usersCollection.findOne({ 
+    // Find user using Prisma
+    const user = await prisma.user.findFirst({
+      where: { 
         email: email.toLowerCase().trim() 
-      });
-    }
+      }
+    });
 
     if (!user) {
       console.log(`❌ User not found: ${email}`);
@@ -72,7 +60,7 @@ export async function POST(request: Request) {
 
     // Return user data
     return NextResponse.json({
-      id: user._id?.toString() || user.id,
+      id: user.id,
       email: user.email,
       name: user.name,
       role: user.role
@@ -85,8 +73,8 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   } finally {
-    if (mongoClient) {
-      await mongoClient.close();
+    if (prisma) {
+      await prisma.$disconnect();
     }
   }
 }

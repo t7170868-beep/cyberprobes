@@ -1,34 +1,37 @@
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
 export async function GET() {
+  let prisma: PrismaClient | null = null;
+
   try {
     // Test environment variables
     const hasDbUrl = !!process.env.DATABASE_URL;
     const hasNextAuthSecret = !!process.env.NEXTAUTH_SECRET;
     const hasNextAuthUrl = !!process.env.NEXTAUTH_URL;
     
-    // Test MongoDB connection
-    let mongoStatus = 'Not tested';
-    let mongoError = null;
+    // Test PostgreSQL (RDS) connection via Prisma
+    let dbStatus = 'Not tested';
+    let dbError = null;
+    let userCount = 0;
     
     try {
-      const { MongoClient } = require('mongodb');
-      
       if (process.env.DATABASE_URL) {
-        const client = new MongoClient(process.env.DATABASE_URL);
-        await client.connect();
+        prisma = new PrismaClient();
+        await prisma.$connect();
         
-        const db = client.db('cyberprobes');
-        const usersCollection = db.collection('User');
-        const userCount = await usersCollection.countDocuments();
+        // Get user count
+        userCount = await prisma.user.count();
         
-        await client.close();
-        
-        mongoStatus = `Connected - ${userCount} users found`;
+        dbStatus = `Connected - ${userCount} users found`;
       }
     } catch (error) {
-      mongoStatus = 'Failed';
-      mongoError = error instanceof Error ? error.message : 'Unknown error';
+      dbStatus = 'Failed';
+      dbError = error instanceof Error ? error.message : 'Unknown error';
+    } finally {
+      if (prisma) {
+        await prisma.$disconnect();
+      }
     }
 
     return NextResponse.json({
@@ -40,9 +43,11 @@ export async function GET() {
         NEXTAUTH_URL_VALUE: process.env.NEXTAUTH_URL,
         NODE_ENV: process.env.NODE_ENV
       },
-      mongodb: {
-        status: mongoStatus,
-        error: mongoError
+      database: {
+        type: 'PostgreSQL (AWS RDS)',
+        status: dbStatus,
+        userCount: userCount,
+        error: dbError
       },
       timestamp: new Date().toISOString()
     });

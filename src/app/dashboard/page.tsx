@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Video {
   id: string;
@@ -13,12 +14,28 @@ interface Video {
   published: boolean;
 }
 
+interface Enrollment {
+  id: string;
+  progress: number;
+  course: {
+    id: string;
+    title: string;
+    slug: string;
+    thumbnail?: string;
+    description: string;
+    category: string;
+    level: string;
+  };
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [coursesLoading, setCoursesLoading] = useState(true);
   
   useEffect(() => {
     // Check authentication
@@ -26,11 +43,27 @@ export default function DashboardPage() {
       router.push('/auth/login');
     }
     
-    // Fetch videos if authenticated
+    // Fetch videos and enrollments if authenticated
     if (status === 'authenticated') {
       fetchVideos();
+      fetchEnrollments();
     }
   }, [status, router]);
+
+  const fetchEnrollments = async () => {
+    setCoursesLoading(true);
+    try {
+      const response = await fetch('/api/enrollments');
+      if (response.ok) {
+        const data = await response.json();
+        setEnrollments(data);
+      }
+    } catch (error) {
+      console.error('Error fetching enrollments:', error);
+    } finally {
+      setCoursesLoading(false);
+    }
+  };
   
   const fetchVideos = async () => {
     setLoading(true);
@@ -76,14 +109,124 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        <div className="bg-gradient-to-r from-blue-900 to-purple-900 text-white p-6">
-          <h1 className="text-2xl font-bold">Welcome, {session.user?.name}!</h1>
-          <p className="text-gray-200">Access exclusive cyber security videos and resources.</p>
+    <div className="min-h-screen bg-bg-primary py-12">
+      <div className="container mx-auto px-4">
+        {/* Welcome Header */}
+        <div className="glass-card p-8 rounded-xl mb-8">
+          <h1 className="font-orbitron text-3xl md:text-4xl font-bold cyber-text mb-2">
+            Welcome, {session.user?.name}!
+          </h1>
+          <p className="font-rajdhani text-xl text-gray-300">
+            Access your enrolled courses and exclusive cyber security resources.
+          </p>
         </div>
-        
-        <div className="p-6">
+
+        {/* My Courses Section */}
+        <div className="glass-card p-8 rounded-xl mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-orbitron text-2xl font-bold text-white">My Courses</h2>
+            <Link
+              href="/courses"
+              className="px-4 py-2 rounded-lg bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue hover:text-white transition-all font-rajdhani font-semibold"
+            >
+              Browse Courses
+            </Link>
+          </div>
+
+          {coursesLoading ? (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 border-4 border-cyber-blue border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="font-rajdhani text-gray-300">Loading your courses...</p>
+            </div>
+          ) : enrollments.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 mx-auto mb-4 text-gray-600">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h3 className="font-rajdhani text-xl font-semibold text-white mb-2">No courses enrolled yet</h3>
+              <p className="font-inter text-gray-400 mb-6">Start your learning journey by enrolling in a course!</p>
+              <Link
+                href="/courses"
+                className="inline-block px-6 py-3 rounded-lg bg-cyber-blue text-white font-rajdhani font-semibold hover:bg-cyber-blue/80 transition-colors"
+              >
+                Explore Courses
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrollments.map((enrollment) => (
+                <div
+                  key={enrollment.id}
+                  className="glass-card rounded-xl overflow-hidden hover:border-cyber-blue/50 transition-all magnetic-button"
+                >
+                  <div className="relative h-48">
+                    {enrollment.course.thumbnail ? (
+                      <Image
+                        src={enrollment.course.thumbnail}
+                        alt={enrollment.course.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-cyber-blue/20 to-neon-purple/20 flex items-center justify-center">
+                        <svg className="w-16 h-16 text-cyber-blue opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                    )}
+                    <div className="absolute top-4 right-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-rajdhani font-semibold ${
+                        enrollment.course.level === 'Beginner' ? 'bg-neon-green/90 text-black' :
+                        enrollment.course.level === 'Intermediate' ? 'bg-cyber-blue/90 text-white' :
+                        'bg-neon-purple/90 text-white'
+                      }`}>
+                        {enrollment.course.level}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-rajdhani text-gray-400">{enrollment.course.category}</span>
+                    </div>
+                    <h3 className="font-orbitron text-lg font-bold text-white mb-3 line-clamp-2">
+                      {enrollment.course.title}
+                    </h3>
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span className="font-rajdhani text-gray-400">Progress</span>
+                        <span className="font-rajdhani text-white">{enrollment.progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-2">
+                        <div
+                          className="bg-cyber-blue h-2 rounded-full transition-all"
+                          style={{ width: `${enrollment.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/dashboard/courses/${enrollment.course.slug}`}
+                      className="block w-full text-center px-4 py-2 rounded-lg bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue hover:text-white transition-all font-rajdhani font-semibold text-sm"
+                    >
+                      Continue Learning
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Videos Section */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+          <div className="bg-gradient-to-r from-blue-900 to-purple-900 text-white p-6">
+            <h2 className="text-2xl font-bold">Cyber Security Videos</h2>
+            <p className="text-gray-200">Access exclusive cyber security videos and resources.</p>
+          </div>
+          
+          <div className="p-6">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Video Player */}
             <div className="lg:w-2/3">
@@ -154,11 +297,11 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
+          </div>
         </div>
-      </div>
       
-      {/* Resources Section */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        {/* Resources Section */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4">Additional Resources</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -207,6 +350,7 @@ export default function DashboardPage() {
               </Link>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -44,26 +44,31 @@ export const authOptions: NextAuthOptions = {
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
-          // Call our API endpoint to validate credentials
-          const baseUrl = process.env.NEXTAUTH_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com';
-          
-          const response = await fetch(`${baseUrl}/api/auth/validate`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: normalizedEmail,
-              password: credentials.password
-            })
+          // Direct database validation using Prisma
+          const bcrypt = require('bcrypt');
+          const user = await prisma.user.findUnique({
+            where: { email: normalizedEmail }
           });
 
-          if (!response.ok) {
-            console.log(`❌ Authentication failed for: ${normalizedEmail}`);
+          if (!user) {
+            console.log(`❌ User not found: ${normalizedEmail}`);
             return null;
           }
 
-          const userData = await response.json();
+          // Verify password
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isValid) {
+            console.log(`❌ Invalid password for: ${normalizedEmail}`);
+            return null;
+          }
+
+          const userData = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role
+          };
           
           if (!userData || !userData.id) {
             console.log(`❌ Invalid user data returned`);
