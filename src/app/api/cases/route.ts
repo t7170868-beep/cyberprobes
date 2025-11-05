@@ -32,9 +32,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(cases);
   } catch (error) {
-    console.error('Error fetching cases:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to fetch cases' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to fetch cases' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -74,61 +77,72 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate case number
+    // Generate case number atomically using transaction to prevent race conditions
     const currentYear = new Date().getFullYear();
-    const caseCount = await prisma.case.count({
-      where: {
-        caseNumber: {
-          startsWith: `CF-${currentYear}-`
+    
+    // Use transaction to ensure atomic case number generation
+    const newCase = await prisma.$transaction(async (tx) => {
+      // Get current count and increment atomically
+      const caseCount = await tx.case.count({
+        where: {
+          caseNumber: {
+            startsWith: `CF-${currentYear}-`
+          }
         }
-      }
-    });
-    const caseNumber = `CF-${currentYear}-${String(caseCount + 1).padStart(3, '0')}`;
-
-    // Create case
-    const newCase = await prisma.case.create({
-      data: {
-        caseNumber,
-        title,
-        description,
-        priority: priority || 'MEDIUM',
-        incidentType,
-        contactPerson,
-        contactEmail,
-        contactPhone,
-        urgency: urgency || false,
-        confidentialityLevel: confidentialityLevel || 'STANDARD',
-        status: 'SUBMITTED',
-        clientEmail: session.user.email || contactEmail,
-        assignedAnalyst: 'Auto-Assignment Pending',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-      }
-    });
-
-    // Create evidence files if provided
-    if (files && files.length > 0) {
-      const evidenceFiles = files.map((file: any) => ({
-        caseId: newCase.id,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        checksum: file.checksum,
-        uploadPath: `/uploads/cases/${newCase.caseNumber}/${file.name}`,
-      }));
-
-      await prisma.evidenceFile.createMany({
-        data: evidenceFiles
       });
-    }
+      
+      const caseNumber = `CF-${currentYear}-${String(caseCount + 1).padStart(3, '0')}`;
+
+      // Create case
+      const createdCase = await tx.case.create({
+        data: {
+          caseNumber,
+          title,
+          description,
+          priority: priority || 'MEDIUM',
+          incidentType,
+          contactPerson,
+          contactEmail,
+          contactPhone,
+          urgency: urgency || false,
+          confidentialityLevel: confidentialityLevel || 'STANDARD',
+          status: 'SUBMITTED',
+          clientEmail: session.user.email || contactEmail,
+          assignedAnalyst: 'Auto-Assignment Pending',
+          estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        }
+      });
+
+      // Create evidence files if provided
+      if (files && files.length > 0) {
+        const evidenceFiles = files.map((file: any) => ({
+          caseId: createdCase.id,
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type,
+          checksum: file.checksum,
+          uploadPath: `/uploads/cases/${createdCase.caseNumber}/${file.name}`,
+        }));
+
+        await tx.evidenceFile.createMany({
+          data: evidenceFiles
+        });
+      }
+
+      return createdCase;
+    });
 
     // Send notification (simulate)
-    console.log(`New case submitted: ${caseNumber} by ${contactEmail}`);
+    // Case created successfully - notification would be sent here
 
     return NextResponse.json(newCase, { status: 201 });
   } catch (error) {
-    console.error('Error creating case:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to create case' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to create case' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

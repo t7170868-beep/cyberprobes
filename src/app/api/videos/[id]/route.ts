@@ -20,11 +20,20 @@ export async function GET(
     
     // Check if this is a secure URL request (has signature)
     if (signature && userId && expires) {
+      // Validate expires parameter
+      const expiresTimestamp = parseInt(expires, 10);
+      if (isNaN(expiresTimestamp) || expiresTimestamp <= 0) {
+        return NextResponse.json(
+          { error: 'Invalid expiration timestamp' },
+          { status: 400 }
+        );
+      }
+      
       // Verify the signed URL
       const isValid = verifySignedUrl(
         id,
         userId,
-        parseInt(expires),
+        expiresTimestamp,
         signature
       );
       
@@ -37,7 +46,7 @@ export async function GET(
             videoId: id,
             userId,
             ip,
-            reason: Date.now() > parseInt(expires) ? 'URL Expired' : 'Invalid Signature'
+            reason: Date.now() > expiresTimestamp ? 'URL Expired' : 'Invalid Signature'
           }
         );
         

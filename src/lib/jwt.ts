@@ -1,8 +1,30 @@
 import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-super-secret-refresh-key-change-in-production';
+const getJWTSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  if (secret === 'your-super-secret-jwt-key-change-in-production') {
+    throw new Error('JWT_SECRET must be set to a secure value in production');
+  }
+  return secret;
+};
+
+const getJWTRefreshSecret = (): string => {
+  const secret = process.env.JWT_REFRESH_SECRET;
+  if (!secret) {
+    throw new Error('JWT_REFRESH_SECRET environment variable is required');
+  }
+  if (secret === 'your-super-secret-refresh-key-change-in-production') {
+    throw new Error('JWT_REFRESH_SECRET must be set to a secure value in production');
+  }
+  return secret;
+};
+
+const JWT_SECRET = getJWTSecret();
+const JWT_REFRESH_SECRET = getJWTRefreshSecret();
 
 export interface JWTPayload {
   userId: string;

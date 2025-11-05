@@ -3,8 +3,7 @@
  * Handles logging authentication attempts, admin actions and security events
  */
 
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 /**
  * Log authentication attempt
@@ -19,8 +18,6 @@ export async function logAuthAttempt(
   ip: string,
   metadata: Record<string, unknown> = {}
 ) {
-  console.log(`Auth attempt: ${email}, success: ${success}, IP: ${ip}`);
-  
   // Store in database for audit purposes
   try {
     await prisma.auditLog.create({
@@ -28,6 +25,7 @@ export async function logAuthAttempt(
         action: 'AUTH_ATTEMPT',
         userId: email, // Use email as identifier since we may not have userId for failed attempts
         ipAddress: ip,
+        severity: success ? 'LOW' : 'MEDIUM',
         details: JSON.stringify({
           success,
           timestamp: new Date().toISOString(),
@@ -36,7 +34,10 @@ export async function logAuthAttempt(
       }
     });
   } catch (error) {
-    console.error('Failed to log authentication attempt:', error);
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to log authentication attempt:', error);
+    }
   }
 }
 
@@ -51,14 +52,13 @@ export async function logAdminAction(
   action: string,
   details: unknown
 ) {
-  console.log(`Admin action: ${userId}, action: ${action}, details: ${JSON.stringify(details)}`);
-  
   // Store in database for audit trail
   try {
     await prisma.auditLog.create({
       data: {
         action: `ADMIN_${action.toUpperCase()}`,
         userId,
+        severity: 'HIGH',
         details: JSON.stringify({
           timestamp: new Date().toISOString(),
           data: details
@@ -66,7 +66,10 @@ export async function logAdminAction(
       }
     });
   } catch (error) {
-    console.error('Failed to log admin action:', error);
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to log admin action:', error);
+    }
   }
 }
 
@@ -81,8 +84,6 @@ export async function logSecurityEvent(
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
   details: unknown
 ) {
-  console.log(`Security event: ${eventType}, severity: ${severity}, details: ${JSON.stringify(details)}`);
-  
   // Store in database
   try {
     await prisma.auditLog.create({
@@ -96,6 +97,9 @@ export async function logSecurityEvent(
       }
     });
   } catch (error) {
-    console.error('Failed to log security event:', error);
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to log security event:', error);
+    }
   }
 } 

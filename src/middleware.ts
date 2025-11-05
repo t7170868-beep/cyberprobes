@@ -21,17 +21,21 @@ export async function middleware(request: NextRequest) {
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     
-    // Content Security Policy
+    // Content Security Policy (removed unsafe-inline and unsafe-eval for better security)
+    // Note: If you need inline scripts/styles, use nonces or hashes instead
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com",
-      "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com",
+      "script-src 'self' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com",
+      "style-src 'self' https://cdn.tailwindcss.com https://fonts.googleapis.com",
       "img-src 'self' data: https: blob:",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https:",
+      "frame-src 'self' https://www.google.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
-      "form-action 'self'"
+      "form-action 'self'",
+      "object-src 'none'",
+      "upgrade-insecure-requests"
     ].join('; ');
     
     response.headers.set('Content-Security-Policy', csp);
@@ -63,10 +67,10 @@ export async function middleware(request: NextRequest) {
         return redirectResponse;
       }
       
-      // TEMPORARILY DISABLED: Check for admin role in the token
-      // if (token.role !== 'ADMIN') {
-      //   return NextResponse.redirect(new URL('/dashboard', request.url));
-      // }
+      // Check for admin role in the token
+      if (token.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
     }
 
     // Course detail routes require authentication (but not the main courses listing page)

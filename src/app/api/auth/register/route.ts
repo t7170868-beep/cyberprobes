@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rateLimit';
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting for registration
+    const clientId = getClientIdentifier(req);
+    const rateLimit = checkRateLimit(clientId, RATE_LIMITS.AUTH);
+    
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Too many registration attempts. Please try again later.',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
+            'X-RateLimit-Limit': RATE_LIMITS.AUTH.maxRequests.toString(),
+            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+            'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+          }
+        }
+      );
+    }
     const { name, email, password } = await req.json();
 
     // Validate required fields
@@ -23,11 +45,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
-    // Validate strong password
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+    // Validate strong password (12 characters minimum, consistent with security.ts)
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{12,}$/;
     if (!passwordPattern.test(password)) {
       return NextResponse.json({ 
-        error: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character' 
+        error: 'Password must be at least 12 characters and include uppercase, lowercase, number, and special character' 
       }, { status: 400 });
     }
 
@@ -65,8 +87,11 @@ export async function POST(req: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Internal server error' 
+      : (error as Error).message;
+    
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 

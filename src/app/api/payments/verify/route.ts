@@ -24,21 +24,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // TODO: In production, verify Razorpay signature
-    // const generatedSignature = crypto
-    //   .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
-    //   .update(`${orderId}|${paymentId}`)
-    //   .digest('hex');
-    //
-    // if (generatedSignature !== signature) {
-    //   return NextResponse.json(
-    //     { error: 'Invalid payment signature' },
-    //     { status: 400 }
-    //   );
-    // }
+    // Verify Razorpay signature
+    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!razorpaySecret) {
+      return NextResponse.json(
+        { error: 'Payment gateway configuration error' },
+        { status: 500 }
+      );
+    }
 
-    // For development/testing, skip signature verification
-    console.log('⚠️  Skipping Razorpay signature verification (development mode)');
+    // In production, always verify signature
+    // In development, only skip if explicitly enabled via env var
+    const skipVerification = process.env.NODE_ENV === 'development' && process.env.SKIP_PAYMENT_VERIFICATION === 'true';
+    
+    if (!skipVerification) {
+      const generatedSignature = crypto
+        .createHmac('sha256', razorpaySecret)
+        .update(`${orderId}|${paymentId}`)
+        .digest('hex');
+
+      // Use timing-safe comparison to prevent timing attacks
+      if (generatedSignature.length !== signature.length) {
+        return NextResponse.json(
+          { error: 'Invalid payment signature' },
+          { status: 400 }
+        );
+      }
+
+      let isValid = true;
+      for (let i = 0; i < generatedSignature.length; i++) {
+        isValid = isValid && generatedSignature[i] === signature[i];
+      }
+
+      if (!isValid) {
+        return NextResponse.json(
+          { error: 'Invalid payment signature' },
+          { status: 400 }
+        );
+      }
+    }
 
     // Get user
     const user = await prisma.user.findUnique({
@@ -81,35 +105,52 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create enrollment with payment
-    const enrollment = await prisma.enrollment.create({
-      data: {
-        userId: user.id,
-        courseId: courseId,
-        progress: 0,
-        payment: {
-          create: {
-            amount: course.price,
-            currency: 'INR',
-            paymentMethod: 'razorpay',
-            paymentId: paymentId,
-            transactionId: orderId,
-            status: 'completed',
-            gatewayResponse: JSON.stringify({
-              razorpay_order_id: orderId,
-              razorpay_payment_id: paymentId,
-              razorpay_signature: signature,
-            }),
+    // Create enrollment with payment atomically using transaction
+    const enrollment = await prisma.$transaction(async (tx) => {
+      // Double-check enrollment doesn't exist (race condition protection)
+      const existingEnrollment = await tx.enrollment.findUnique({
+        where: {
+          userId_courseId: {
+            userId: user.id,
+            courseId: courseId,
           },
         },
-      },
-      include: {
-        course: true,
-        payment: true,
-      },
+      });
+
+      if (existingEnrollment) {
+        throw new Error('Already enrolled in this course');
+      }
+
+      // Create enrollment with payment
+      return await tx.enrollment.create({
+        data: {
+          userId: user.id,
+          courseId: courseId,
+          progress: 0,
+          payment: {
+            create: {
+              amount: course.price,
+              currency: 'INR',
+              paymentMethod: 'razorpay',
+              paymentId: paymentId,
+              transactionId: orderId,
+              status: 'completed',
+              gatewayResponse: JSON.stringify({
+                razorpay_order_id: orderId,
+                razorpay_payment_id: paymentId,
+                razorpay_signature: signature,
+              }),
+            },
+          },
+        },
+        include: {
+          course: true,
+          payment: true,
+        },
+      });
     });
 
-    console.log(`✅ Payment verified and enrollment created for user: ${user.email}`);
+    // Payment verified and enrollment created successfully
 
     // TODO: Send enrollment confirmation email
     // await sendEnrollmentEmail(user.email, course.title);
@@ -119,9 +160,12 @@ export async function POST(req: NextRequest) {
       enrollment,
     });
   } catch (error) {
-    console.error('Error verifying payment:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to verify payment' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to verify payment' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

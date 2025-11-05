@@ -134,9 +134,12 @@ export async function POST(req: NextRequest) {
       // orderId: order.id, // Uncomment when Razorpay is integrated
     });
   } catch (error) {
-    console.error('Payment creation error:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to create payment' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to create payment' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
