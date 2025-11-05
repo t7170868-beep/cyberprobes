@@ -21,12 +21,23 @@ export async function middleware(request: NextRequest) {
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     
-    // Content Security Policy (removed unsafe-inline and unsafe-eval for better security)
-    // Note: If you need inline scripts/styles, use nonces or hashes instead
+    // Content Security Policy
+    // In development, allow unsafe-inline and unsafe-eval for Next.js hot reloading
+    // In production, use strict CSP without these directives
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    const scriptSrc = isDevelopment
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com"
+      : "script-src 'self' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com";
+    
+    const styleSrc = isDevelopment
+      ? "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com"
+      : "style-src 'self' https://cdn.tailwindcss.com https://fonts.googleapis.com";
+    
     const csp = [
       "default-src 'self'",
-      "script-src 'self' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com",
-      "style-src 'self' https://cdn.tailwindcss.com https://fonts.googleapis.com",
+      scriptSrc,
+      styleSrc,
       "img-src 'self' data: https: blob:",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https:",

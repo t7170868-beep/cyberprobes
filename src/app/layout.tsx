@@ -67,11 +67,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
         <link href="https://cdn.tailwindcss.com" rel="stylesheet" />
       </head>
-      <body className="min-h-screen font-inter">
+      <body className="min-h-screen font-inter" suppressHydrationWarning>
         <AuthProvider>
           <SmoothScroll />
           <Navbar />
-          {children}
+          <main>{children}</main>
           <EmergencyWidget />
         </AuthProvider>
       </body>

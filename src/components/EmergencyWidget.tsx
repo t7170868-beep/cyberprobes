@@ -15,6 +15,7 @@ export default function EmergencyWidget() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [caseId, setCaseId] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -26,6 +27,10 @@ export default function EmergencyWidget() {
     setIsSubmitting(true);
 
     try {
+      // Generate case ID only on client side to avoid hydration mismatch
+      const newCaseId = `EM-${Date.now().toString().slice(-6)}`;
+      setCaseId(newCaseId);
+      
       // Simulate API call that sends both email and SMS
       await new Promise(resolve => setTimeout(resolve, 1500));
       setSubmitSuccess(true);
@@ -43,6 +48,7 @@ export default function EmergencyWidget() {
         setSubmitSuccess(false);
         setIsFormOpen(false);
         setIsOpen(false);
+        setCaseId('');
       }, 3000);
     } catch (error) {
       console.error('Emergency form submission failed:', error);
@@ -173,7 +179,7 @@ export default function EmergencyWidget() {
                     You will receive a call within 15 minutes.
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Case ID: EM-{Date.now().toString().slice(-6)}
+                    Case ID: {caseId || 'Generating...'}
                   </p>
                 </div>
               ) : (
