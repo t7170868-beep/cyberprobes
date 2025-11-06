@@ -26,9 +26,12 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(courses);
   } catch (error) {
-    console.error('Error fetching courses:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to fetch courses' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to fetch courses' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -82,9 +85,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(course, { status: 201 });
   } catch (error) {
-    console.error('Error creating course:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to create course' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to create course' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
