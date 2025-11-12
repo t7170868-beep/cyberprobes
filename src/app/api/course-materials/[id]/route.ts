@@ -6,10 +6,10 @@ import { prisma } from '@/lib/prisma';
 // GET /api/course-materials/[id] - Get a specific course material
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
     
     const material = await prisma.courseMaterial.findUnique({
       where: { id },
@@ -38,9 +38,10 @@ export async function GET(
 // PUT /api/course-materials/[id] - Update a specific course material
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     
     // Check authorization
@@ -50,8 +51,6 @@ export async function PUT(
         { status: 401 }
       );
     }
-
-    const id = params.id;
     const body = await req.json();
     const { title, type, url, courseId } = body;
     
@@ -105,9 +104,10 @@ export async function PUT(
 // DELETE /api/course-materials/[id] - Delete a specific course material
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     
     // Check authorization
@@ -117,8 +117,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-
-    const id = params.id;
     
     // Check if material exists
     const existingMaterial = await prisma.courseMaterial.findUnique({

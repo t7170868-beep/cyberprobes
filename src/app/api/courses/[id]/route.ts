@@ -6,10 +6,10 @@ import { prisma } from '@/lib/prisma';
 // GET /api/courses/[id] - Get a specific course by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
     
     const course = await prisma.course.findUnique({
       where: { id },
@@ -46,9 +46,10 @@ export async function GET(
 // PUT /api/courses/[id] - Update a specific course
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     
     // Check authorization
@@ -58,8 +59,6 @@ export async function PUT(
         { status: 401 }
       );
     }
-
-    const id = params.id;
     const body = await req.json();
     const { title, description, slug, published } = body;
     
@@ -113,9 +112,10 @@ export async function PUT(
 // DELETE /api/courses/[id] - Delete a specific course
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     
     // Check authorization
@@ -125,8 +125,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-
-    const id = params.id;
     
     // Check if course exists
     const existingCourse = await prisma.course.findUnique({

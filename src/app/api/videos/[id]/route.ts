@@ -8,10 +8,10 @@ import { logSecurityEvent } from '@/lib/logger';
 // GET /api/videos/[id] - Get a specific video by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const searchParams = req.nextUrl.searchParams;
     const userId = searchParams.get('userId');
     const expires = searchParams.get('expires');
@@ -115,9 +115,10 @@ export async function GET(
 // PUT /api/videos/[id] - Update a specific video
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     
@@ -128,7 +129,7 @@ export async function PUT(
         'UNAUTHORIZED_API_ACCESS',
         'HIGH',
         {
-          endpoint: `/api/videos/${params.id}`,
+          endpoint: `/api/videos/${id}`,
           method: 'PUT',
           ip
         }
@@ -147,7 +148,7 @@ export async function PUT(
         'HIGH',
         {
           userId: session.user.id,
-          endpoint: `/api/videos/${params.id}`,
+          endpoint: `/api/videos/${id}`,
           method: 'PUT',
           ip,
           requiredRole: 'ADMIN',
@@ -160,8 +161,6 @@ export async function PUT(
         { status: 403 }
       );
     }
-
-    const id = params.id;
     const body = await req.json();
     const { title, description, url, published } = body;
     
@@ -201,9 +200,10 @@ export async function PUT(
 // DELETE /api/videos/[id] - Delete a specific video
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     
@@ -213,7 +213,7 @@ export async function DELETE(
         'UNAUTHORIZED_API_ACCESS',
         'HIGH',
         {
-          endpoint: `/api/videos/${params.id}`,
+          endpoint: `/api/videos/${id}`,
           method: 'DELETE',
           ip
         }
@@ -232,7 +232,7 @@ export async function DELETE(
         'HIGH',
         {
           userId: session.user.id,
-          endpoint: `/api/videos/${params.id}`,
+          endpoint: `/api/videos/${id}`,
           method: 'DELETE',
           ip,
           requiredRole: 'ADMIN',
@@ -245,8 +245,6 @@ export async function DELETE(
         { status: 403 }
       );
     }
-
-    const id = params.id;
     
     // Check if video exists
     const existingVideo = await prisma.video.findUnique({

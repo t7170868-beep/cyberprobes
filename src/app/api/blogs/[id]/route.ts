@@ -6,9 +6,9 @@ import { prisma } from '@/lib/prisma';
 // GET /api/blogs/[id] - Get a specific blog
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = params.id;
+  const { id } = await params;
   
   try {
     const blog = await prisma.blog.findUnique({
@@ -35,9 +35,9 @@ export async function GET(
 // PUT /api/blogs/[id] - Update a specific blog
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = params.id;
+  const { id } = await params;
   
   try {
     const session = await getServerSession(authOptions);
@@ -76,9 +76,9 @@ export async function PUT(
 // DELETE /api/blogs/[id] - Delete a specific blog
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = params.id;
+  const { id } = await params;
   
   try {
     const session = await getServerSession(authOptions);
