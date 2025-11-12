@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
           // Direct database validation using Prisma
-          const bcrypt = require('bcrypt');
+          const prisma = new PrismaClient();
           const user = await prisma.user.findUnique({
             where: { email: normalizedEmail }
           });
@@ -76,6 +76,9 @@ export const authOptions: NextAuthOptions = {
           }
 
           console.log(`✅ Login successful for: ${normalizedEmail}`);
+          
+          // Disconnect Prisma
+          await prisma.$disconnect();
           
           return {
             id: userData.id,

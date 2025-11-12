@@ -59,6 +59,18 @@ export default function CyberHero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center cyber-grid matrix-bg overflow-hidden">
+      {/* Logo Watermark */}
+      <div className="absolute top-10 left-10 md:top-20 md:left-20 z-0 opacity-15 pointer-events-none">
+        <Image
+          src="/logo-watermark.svg"
+          alt=""
+          width={400}
+          height={400}
+          className="object-contain"
+          priority
+        />
+      </div>
+      
       {/* Moving Nodes */}
       <div ref={nodesRef} className="moving-nodes"></div>
       

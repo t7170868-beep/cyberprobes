@@ -1,0 +1,41 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Circle with Gradient -->
+  <circle cx="30" cy="30" r="28" stroke="url(#gradient1)" stroke-width="2" fill="rgba(10, 14, 39, 0.4)"/>
+  <circle cx="30" cy="30" r="22" stroke="url(#gradient2)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Lock Icon -->
+  <rect x="23" y="28" width="14" height="11" rx="1.5" fill="url(#gradient3)"/>
+  <path d="M 26 28 V 23 C 26 20.2 28.2 18 31 18 C 33.8 18 36 20.2 36 23 V 28" stroke="#00FFB3" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Keyhole -->
+  <circle cx="30" cy="32" r="2" fill="#0A0E27"/>
+  <rect x="29" y="32" width="2" height="4" fill="#0A0E27" rx="0.5"/>
+  
+  <!-- Circuit Lines -->
+  <path d="M 42 20 L 45 20 M 45 17 L 45 23" stroke="#00FFB3" stroke-width="1" opacity="0.7"/>
+  <circle cx="45" cy="20" r="1.5" fill="#00FFB3"/>
+  
+  <path d="M 15 40 L 12 40 M 12 37 L 12 43" stroke="#00E5FF" stroke-width="1" opacity="0.7"/>
+  <circle cx="12" cy="40" r="1.5" fill="#00E5FF"/>
+  
+  <!-- Scanning Effect Lines -->
+  <path d="M 15 15 L 20 15" stroke="#A94DFF" stroke-width="1" opacity="0.5" stroke-dasharray="2,2"/>
+  <path d="M 40 45 L 45 45" stroke="#A94DFF" stroke-width="1" opacity="0.5" stroke-dasharray="2,2"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A94DFF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A94DFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+

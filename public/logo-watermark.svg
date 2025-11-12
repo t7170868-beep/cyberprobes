@@ -1,0 +1,61 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Large Background Logo for Watermarks -->
+  <g opacity="0.15">
+    <!-- Outer Circles -->
+    <circle cx="200" cy="200" r="180" stroke="url(#gradient1)" stroke-width="3" fill="none"/>
+    <circle cx="200" cy="200" r="150" stroke="url(#gradient2)" stroke-width="2" fill="none"/>
+    <circle cx="200" cy="200" r="120" stroke="url(#gradient1)" stroke-width="1.5" fill="none"/>
+    
+    <!-- Central Lock -->
+    <rect x="170" y="190" width="60" height="50" rx="5" fill="url(#gradient3)"/>
+    <path d="M 185 190 V 165 C 185 145 215 145 215 165 V 190" stroke="#00FFB3" stroke-width="8" fill="none" stroke-linecap="round"/>
+    
+    <!-- Keyhole -->
+    <circle cx="200" cy="210" r="8" fill="#0A0E27"/>
+    <rect x="196" y="210" width="8" height="20" fill="#0A0E27" rx="2"/>
+    
+    <!-- Circuit Pattern Around -->
+    <g opacity="0.6">
+      <!-- Top -->
+      <line x1="200" y1="20" x2="200" y2="50" stroke="#00E5FF" stroke-width="2"/>
+      <circle cx="200" cy="50" r="5" fill="#00E5FF"/>
+      
+      <!-- Right -->
+      <line x1="380" y1="200" x2="350" y2="200" stroke="#A94DFF" stroke-width="2"/>
+      <circle cx="350" cy="200" r="5" fill="#A94DFF"/>
+      
+      <!-- Bottom -->
+      <line x1="200" y1="380" x2="200" y2="350" stroke="#00FFB3" stroke-width="2"/>
+      <circle cx="200" cy="350" r="5" fill="#00FFB3"/>
+      
+      <!-- Left -->
+      <line x1="20" y1="200" x2="50" y2="200" stroke="#00E5FF" stroke-width="2"/>
+      <circle cx="50" cy="200" r="5" fill="#00E5FF"/>
+      
+      <!-- Diagonal Lines -->
+      <line x1="280" y1="120" x2="300" y2="100" stroke="#A94DFF" stroke-width="1.5"/>
+      <line x1="120" y1="280" x2="100" y2="300" stroke="#00FFB3" stroke-width="1.5"/>
+    </g>
+    
+    <!-- Scanning Grid -->
+    <path d="M 80 80 L 120 80 M 280 80 L 320 80 M 80 320 L 120 320 M 280 320 L 320 320" 
+          stroke="#00E5FF" stroke-width="1" stroke-dasharray="5,5"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A94DFF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A94DFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+

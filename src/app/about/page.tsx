@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -30,6 +31,17 @@ export default function AboutPage() {
         <div className="absolute inset-0 cyber-grid opacity-30"></div>
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyber-blue/5 rounded-full blur-3xl animate-pulse"></div>
         
+        {/* Logo Watermark */}
+        <div className="absolute top-10 right-10 opacity-10 pointer-events-none">
+          <Image
+            src="/logo-watermark.svg"
+            alt=""
+            width={300}
+            height={300}
+            className="object-contain"
+          />
+        </div>
+        
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h1 className="font-orbitron text-4xl md:text-6xl font-bold cyber-text mb-6">About CyberProbes</h1>
@@ -51,7 +63,15 @@ export default function AboutPage() {
               <div className="glass-card rounded-2xl overflow-hidden p-8">
                 <div className="relative h-96 w-full rounded-xl overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyber-blue to-neon-purple opacity-80"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
+                    <div className="relative w-32 h-32">
+                      <Image
+                        src="/logo-icon.svg"
+                        alt="CyberProbes Logo"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
                     <span className="font-orbitron text-5xl font-bold text-white cyber-glow">CyberProbes</span>
                   </div>
                   <div className="absolute inset-0 cyber-grid opacity-30"></div>
@@ -135,6 +155,17 @@ export default function AboutPage() {
       <section className="py-16 md:py-24 bg-bg-tertiary relative overflow-hidden">
         <div className="absolute inset-0 cyber-grid opacity-20"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-neon-purple/5 rounded-full blur-3xl animate-pulse"></div>
+        
+        {/* Background Logo Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+          <Image
+            src="/logo-watermark.svg"
+            alt=""
+            width={400}
+            height={400}
+            className="object-contain"
+          />
+        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="glass-card p-12 rounded-2xl text-center">

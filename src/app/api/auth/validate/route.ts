@@ -26,9 +26,9 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`🔌 Connecting to PostgreSQL for user: ${email}`);
+    console.log(`🔌 Connecting to MongoDB for user: ${email}`);
 
-    // Connect to PostgreSQL via Prisma
+    // Connect to MongoDB via Prisma
     prisma = new PrismaClient({
       datasources: {
         db: {

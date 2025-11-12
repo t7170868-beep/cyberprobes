@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import Image from 'next/image';
 import { useState } from 'react';
 
 export default function Header() {
@@ -19,8 +20,19 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-800">
-              CyberProbes
+            <Link href="/" className="flex items-center space-x-2 group" style={{ marginLeft: '30px' }}>
+              <div className="relative w-10 h-10 transition-transform group-hover:scale-110">
+                <Image
+                  src="/logo-icon.svg"
+                  alt="CyberProbes Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <span className="font-orbitron text-xl md:text-2xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
+                CyberProbes
+              </span>
             </Link>
           </div>
           

@@ -44,7 +44,15 @@ export default function ServicesPage() {
       <div className="mb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <Link href="#pentesting" className="block">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-blue-600 service-card">
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-blue-600 service-card relative">
+              <div className="absolute top-3 left-3 w-6 h-6 opacity-30">
+                <Image
+                  src="/logo-icon.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="text-blue-600 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -58,7 +66,15 @@ export default function ServicesPage() {
           </Link>
           
           <Link href="#forensics" className="block">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-purple-600 service-card">
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-purple-600 service-card relative">
+              <div className="absolute top-3 left-3 w-6 h-6 opacity-30">
+                <Image
+                  src="/logo-icon.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="text-purple-600 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -72,7 +88,15 @@ export default function ServicesPage() {
           </Link>
           
           <Link href="#consulting" className="block">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-green-600 service-card">
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-green-600 service-card relative">
+              <div className="absolute top-3 left-3 w-6 h-6 opacity-30">
+                <Image
+                  src="/logo-icon.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="text-green-600 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -86,7 +110,15 @@ export default function ServicesPage() {
           </Link>
           
           <Link href="#training" className="block">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-yellow-600 service-card">
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-yellow-600 service-card relative">
+              <div className="absolute top-3 left-3 w-6 h-6 opacity-30">
+                <Image
+                  src="/logo-icon.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="text-yellow-600 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path d="M12 14l9-5-9-5-9 5 9 5z" />
@@ -102,7 +134,15 @@ export default function ServicesPage() {
           </Link>
           
           <Link href="#incident-response" className="block">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-red-600 service-card">
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-red-600 service-card relative">
+              <div className="absolute top-3 left-3 w-6 h-6 opacity-30">
+                <Image
+                  src="/logo-icon.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="text-red-600 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -116,7 +156,15 @@ export default function ServicesPage() {
           </Link>
           
           <Link href="#compliance" className="block">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-indigo-600 service-card">
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition border-t-4 border-indigo-600 service-card relative">
+              <div className="absolute top-3 left-3 w-6 h-6 opacity-30">
+                <Image
+                  src="/logo-icon.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="text-indigo-600 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -365,8 +413,18 @@ export default function ServicesPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-purple-900 text-white mt-24 p-12 rounded-lg">
-        <div className="text-center">
+      <div className="bg-gradient-to-r from-blue-900 to-purple-900 text-white mt-24 p-12 rounded-lg relative overflow-hidden">
+        {/* Background Logo Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+          <Image
+            src="/logo-watermark.svg"
+            alt=""
+            width={400}
+            height={400}
+            className="object-contain"
+          />
+        </div>
+        <div className="text-center relative z-10">
           <h2 className="text-3xl font-bold mb-4">Ready to Secure Your Business?</h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
             Contact us today for a free consultation and learn how we can help protect your digital assets.

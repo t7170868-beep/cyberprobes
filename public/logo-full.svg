@@ -1,0 +1,49 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Magnifying Glass Circle -->
+  <circle cx="30" cy="30" r="18" stroke="url(#gradient1)" stroke-width="2.5" fill="none"/>
+  <circle cx="30" cy="30" r="14" stroke="url(#gradient2)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Lock Icon Inside -->
+  <rect x="25" y="28" width="10" height="8" rx="1" fill="url(#gradient3)"/>
+  <path d="M 27 28 V 25 C 27 23.3 28.3 22 30 22 C 31.7 22 33 23.3 33 25 V 28" stroke="#00FFB3" stroke-width="1.5" fill="none"/>
+  
+  <!-- Keyhole -->
+  <circle cx="30" cy="31" r="1.5" fill="#0A0E27"/>
+  <rect x="29.5" y="31" width="1" height="3" fill="#0A0E27"/>
+  
+  <!-- Circuit Pattern -->
+  <path d="M 40 25 L 43 25 M 43 22 L 43 28" stroke="#00FFB3" stroke-width="1" opacity="0.6"/>
+  <circle cx="43" cy="25" r="1" fill="#00FFB3"/>
+  
+  <!-- Handle of Magnifying Glass -->
+  <path d="M 42 42 L 50 50" stroke="url(#gradient1)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="50" cy="50" r="2" fill="#00E5FF"/>
+  
+  <!-- "CP" Text Integration -->
+  <text x="70" y="42" font-family="'Orbitron', monospace" font-size="28" font-weight="700" fill="url(#textGradient)">CyberProbes</text>
+  
+  <!-- Tagline -->
+  <text x="72" y="52" font-family="'Rajdhani', sans-serif" font-size="8" fill="#64748B" letter-spacing="1">Digital Forensics & Incident Response</text>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A94DFF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A94DFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+

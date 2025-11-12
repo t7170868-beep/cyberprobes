@@ -262,7 +262,7 @@ export default function ContactPage() {
                         required
                         pattern="^[A-Za-z\s\.\-']+$"
                         title="Name should only contain letters, spaces, periods, hyphens, or apostrophes"
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         placeholder="Your name"
                         maxLength={50}
                       />
@@ -281,7 +281,7 @@ export default function ContactPage() {
                         required
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                         title="Please enter a valid email address"
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         placeholder="your.email@example.com"
                       />
                       {formErrors.email && (
@@ -301,7 +301,7 @@ export default function ContactPage() {
                         onChange={handleChange}
                         pattern="^[0-9()\-\s+]+$"
                         title="Phone number should only contain numbers, parentheses, hyphens, spaces, and plus sign"
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         placeholder="(555) 123-4567"
                         maxLength={15}
                       />
@@ -317,7 +317,7 @@ export default function ContactPage() {
                         name="company"
                         value={formData.company}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         placeholder="Your company"
                       />
                     </div>
@@ -330,7 +330,7 @@ export default function ContactPage() {
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white"
                     >
                       <option value="">Please select a service</option>
                       <option value="Penetration Testing">Penetration Testing</option>
@@ -351,7 +351,7 @@ export default function ContactPage() {
                       onChange={handleChange}
                       required
                       rows={5}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 resize-none"
                       placeholder="How can we help you?"
                     ></textarea>
                   </div>

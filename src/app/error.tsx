@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { logError, getUserFriendlyMessage } from '@/lib/errorHandler'
 
 export default function Error({
   error,
@@ -10,8 +11,12 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Error occurred:', error)
+    // Log error with context
+    logError(error, 'Error Boundary');
+    console.error('🔴 Error Boundary caught:', error);
   }, [error])
+
+  const userMessage = getUserFriendlyMessage(error);
 
   return (
     <div style={{
@@ -42,8 +47,24 @@ export default function Error({
             color: '#6b7280',
             marginBottom: '1.5rem'
           }}>
-            An unexpected error has occurred. Please try again.
+            {userMessage}
           </p>
+          {process.env.NODE_ENV === 'development' && (
+            <details style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: '#f3f4f6',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              color: '#6b7280'
+            }}>
+              <summary style={{ cursor: 'pointer', marginBottom: '0.5rem' }}>Error Details (Dev Only)</summary>
+              <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                {error.message}
+                {error.stack && `\n\n${error.stack}`}
+              </pre>
+            </details>
+          )}
           <button
             onClick={() => reset()}
             style={{

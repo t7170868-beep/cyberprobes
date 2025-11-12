@@ -1,0 +1,30 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="16" cy="16" r="15" fill="#0A0E27"/>
+  <circle cx="16" cy="16" r="14" stroke="url(#gradient1)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Lock Icon -->
+  <rect x="12" y="15" width="8" height="6" rx="1" fill="url(#gradient2)"/>
+  <path d="M 14 15 V 12.5 C 14 11 15 10 16.5 10 C 18 10 19 11 19 12.5 V 15" stroke="#00FFB3" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Keyhole -->
+  <circle cx="16" cy="17.5" r="1" fill="#0A0E27"/>
+  <rect x="15.5" y="17.5" width="1" height="2" fill="#0A0E27"/>
+  
+  <!-- Circuit Accent -->
+  <circle cx="24" cy="12" r="1" fill="#00E5FF" opacity="0.8"/>
+  <circle cx="8" cy="20" r="1" fill="#A94DFF" opacity="0.8"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A94DFF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+

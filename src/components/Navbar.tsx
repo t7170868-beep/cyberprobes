@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import Image from 'next/image';
 // import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
@@ -31,12 +32,19 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 magnetic-button">
-              <div className="w-10 h-10 glow-border rounded-lg flex items-center justify-center relative overflow-hidden">
-                <span className="font-orbitron font-bold text-lg cyber-text">C</span>
-                <div className="absolute inset-0 bg-cyber-blue opacity-10 animate-pulse"></div>
+            <Link href="/" className="flex items-center space-x-2 magnetic-button group" style={{ marginLeft: '30px' }}>
+              <div className="relative w-12 h-12 transition-transform group-hover:scale-110">
+                <Image
+                  src="/logo-icon.svg"
+                  alt="CyberProbes Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
-              <span className="font-orbitron text-xl font-bold cyber-text">CyberProbes</span>
+              <span className="font-orbitron text-xl md:text-2xl font-bold cyber-text group-hover:text-cyber-blue transition-colors">
+                CyberProbes
+              </span>
             </Link>
           </div>
           

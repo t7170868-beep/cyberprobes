@@ -1,0 +1,30 @@
+<svg width="150" height="40" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon Part -->
+  <circle cx="20" cy="20" r="15" stroke="url(#gradient1)" stroke-width="1.5" fill="none"/>
+  <circle cx="20" cy="20" r="11" stroke="url(#gradient2)" stroke-width="1" fill="none"/>
+  
+  <!-- Lock -->
+  <rect x="16" y="19" width="8" height="6" rx="1" fill="url(#gradient3)"/>
+  <path d="M 18 19 V 17 C 18 15.3 19.3 14 21 14 C 22.7 14 24 15.3 24 17 V 19" stroke="#00FFB3" stroke-width="1.2" fill="none"/>
+  <circle cx="20" cy="21.5" r="1" fill="#0A0E27"/>
+  
+  <!-- Text -->
+  <text x="42" y="27" font-family="'Orbitron', monospace" font-size="18" font-weight="700" fill="white">CyberProbes</text>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A94DFF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A94DFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FFB3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+

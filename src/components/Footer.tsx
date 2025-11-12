@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -8,7 +9,17 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">CyberProbes</h3>
+            <Link href="/" className="flex items-center space-x-2 mb-4 group">
+              <div className="relative w-8 h-8 transition-transform group-hover:scale-110">
+                <Image
+                  src="/logo-compact.svg"
+                  alt="CyberProbes Logo"
+                  fill
+                  className="object-contain brightness-0 invert"
+                />
+              </div>
+              <h3 className="font-orbitron text-xl font-bold text-white">CyberProbes</h3>
+            </Link>
             <p className="text-gray-400 dark:text-gray-300">
               Professional cyber security and digital forensics services for businesses and individuals.
             </p>

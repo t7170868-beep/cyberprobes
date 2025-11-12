@@ -174,8 +174,18 @@ export default function Home() {
       <CyberForensicProcess />
 
       {/* Call to Action */}
-      <section className="bg-blue-900 text-white py-10 md:py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="bg-blue-900 text-white py-10 md:py-16 relative overflow-hidden">
+        {/* Background Logo Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+          <Image
+            src="/logo-watermark.svg"
+            alt=""
+            width={400}
+            height={400}
+            className="object-contain"
+          />
+        </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3 md:mb-4">Ready to Secure Your Business?</h2>
           <p className="text-base sm:text-xl mb-6 md:mb-8 max-w-3xl mx-auto">
             Contact us today for a free consultation and learn how we can help protect your digital assets.
