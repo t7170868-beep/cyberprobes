@@ -4,14 +4,15 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 
 interface BlogPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: BlogPageProps) {
-  const blog = await getBlogBySlug(params.slug);
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
   
   if (!blog) {
     return {
@@ -46,7 +47,8 @@ async function getBlogBySlug(slug: string) {
 }
 
 export default async function BlogPost({ params }: BlogPageProps) {
-  const blog = await getBlogBySlug(params.slug);
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
   
   // If blog not found or not published, return 404
   if (!blog) {
