@@ -84,8 +84,8 @@ export async function PUT(req: NextRequest) {
         );
       }
       
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      // Hash new password with 12 rounds (consistent with registration)
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
       updateData.password = hashedPassword;
     }
     
@@ -108,9 +108,12 @@ export async function PUT(req: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Error updating profile:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to update profile' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { message: 'Failed to update profile' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 // Extend the default session and JWT types
 declare module "next-auth" {
@@ -34,24 +34,19 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log("Missing credentials");
           return null;
         }
 
         try {
-          console.log(`🔍 Attempting login for: ${credentials.email}`);
-
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
           // Direct database validation using Prisma
-          const prisma = new PrismaClient();
           const user = await prisma.user.findUnique({
             where: { email: normalizedEmail }
           });
 
           if (!user) {
-            console.log(`❌ User not found: ${normalizedEmail}`);
             return null;
           }
 
@@ -59,7 +54,6 @@ export const authOptions: NextAuthOptions = {
           const isValid = await bcrypt.compare(credentials.password, user.password);
           
           if (!isValid) {
-            console.log(`❌ Invalid password for: ${normalizedEmail}`);
             return null;
           }
 
@@ -71,14 +65,8 @@ export const authOptions: NextAuthOptions = {
           };
           
           if (!userData || !userData.id) {
-            console.log(`❌ Invalid user data returned`);
             return null;
           }
-
-          console.log(`✅ Login successful for: ${normalizedEmail}`);
-          
-          // Disconnect Prisma
-          await prisma.$disconnect();
           
           return {
             id: userData.id,
@@ -88,7 +76,10 @@ export const authOptions: NextAuthOptions = {
           } as any;
 
         } catch (error) {
-          console.error("❌ Authorization error:", error);
+          // Log error but don't expose details
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Authorization error:", error);
+          }
           return null;
         }
       }
@@ -98,7 +89,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       // Add role and id to token when user logs in
       if (user) {
-        token.role = (user as User).role;
+        token.role = (user as any).role;
         token.id = user.id;
       }
       return token;
@@ -118,7 +109,16 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30 days for better security)
   },
-  secret: process.env.NEXTAUTH_SECRET || "your-default-secret-do-not-use-in-production",
+  secret: (() => {
+    const secret = process.env.NEXTAUTH_SECRET;
+    if (!secret) {
+      throw new Error('NEXTAUTH_SECRET environment variable is required');
+    }
+    if (secret === 'your-default-secret-do-not-use-in-production') {
+      throw new Error('NEXTAUTH_SECRET must be set to a secure value in production');
+    }
+    return secret;
+  })(),
 }; 

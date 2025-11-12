@@ -1,11 +1,33 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rateLimit';
+import { logAuthAttempt } from '@/lib/logger';
 
 export async function POST(request: Request) {
-  let prisma: PrismaClient | null = null;
-
   try {
+    // Rate limiting for login
+    const clientId = getClientIdentifier(request);
+    const rateLimit = checkRateLimit(clientId, RATE_LIMITS.AUTH);
+    
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Too many login attempts. Please try again later.',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
+            'X-RateLimit-Limit': RATE_LIMITS.AUTH.maxRequests.toString(),
+            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+            'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+          }
+        }
+      );
+    }
+
     const body = await request.json();
     const { email, password } = body;
 
@@ -16,36 +38,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const databaseUrl = process.env.DATABASE_URL;
-
-    if (!databaseUrl) {
-      console.error('DATABASE_URL is not defined');
-      return NextResponse.json(
-        { error: 'Database configuration error' },
-        { status: 500 }
-      );
-    }
-
-    console.log(`🔌 Connecting to MongoDB for user: ${email}`);
-
-    // Connect to MongoDB via Prisma
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: databaseUrl
-        }
-      }
-    });
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Find user
+    const normalizedEmail = email.toLowerCase().trim();
     const user = await prisma.user.findUnique({ 
       where: {
-        email: email.toLowerCase().trim()
+        email: normalizedEmail
       }
     });
 
     if (!user) {
-      console.log(`❌ User not found: ${email}`);
+      await logAuthAttempt(normalizedEmail, false, ip);
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -53,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     if (!user.password) {
-      console.log(`❌ No password set for user: ${email}`);
+      await logAuthAttempt(normalizedEmail, false, ip, { reason: 'No password set' });
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -64,14 +68,14 @@ export async function POST(request: Request) {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      console.log(`❌ Invalid password for user: ${email}`);
+      await logAuthAttempt(normalizedEmail, false, ip);
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
 
-    console.log(`✅ Authentication successful for: ${email}`);
+    await logAuthAttempt(normalizedEmail, true, ip);
 
     // Return user data
     return NextResponse.json({
@@ -82,15 +86,14 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Validation error:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Authentication failed' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: errorMessage },
       { status: 500 }
     );
-  } finally {
-    if (prisma) {
-      await prisma.$disconnect();
-    }
   }
 }
 

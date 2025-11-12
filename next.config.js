@@ -3,16 +3,12 @@ const nextConfig = {
   // Enable standalone output for Docker deployment
   output: 'standalone',
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: true,
+    // In production, type errors should be fixed before deployment
+    ignoreBuildErrors: process.env.NODE_ENV === 'development',
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+    // In production, ESLint errors should be fixed before deployment
+    ignoreDuringBuilds: process.env.NODE_ENV === 'development',
   },
   // Image optimization
   images: {

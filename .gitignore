@@ -83,3 +83,6 @@ dist/
 # OS generated files
 Thumbs.db
 ehthumbs.db
+
+# Uploaded files (stored outside public directory for security)
+/uploads/

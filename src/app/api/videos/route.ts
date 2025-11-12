@@ -30,9 +30,12 @@ export async function GET(req: NextRequest) {
     
     return NextResponse.json(videos);
   } catch (error) {
-    console.error('Error fetching videos:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to fetch videos' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to fetch videos' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -71,9 +74,12 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json(video, { status: 201 });
   } catch (error) {
-    console.error('Error creating video:', error);
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? 'Failed to create video' 
+      : (error as Error).message;
+    
     return NextResponse.json(
-      { error: 'Failed to create video' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
