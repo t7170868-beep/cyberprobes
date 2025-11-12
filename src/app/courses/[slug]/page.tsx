@@ -35,6 +35,7 @@ interface Course {
       title: string;
       type: string;
       duration?: string;
+      order?: number;
     }>;
   }>;
   enrollments?: Array<{
@@ -393,7 +394,7 @@ export default function CourseDetailPage() {
                         {module.materials && module.materials.length > 0 && (
                           <div className="ml-16 space-y-2">
                             {module.materials
-                              .sort((a, b) => a.order - b.order)
+                              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
                               .map((material) => (
                                 <div key={material.id} className="flex items-center gap-3 text-sm text-gray-400">
                                   <span>
