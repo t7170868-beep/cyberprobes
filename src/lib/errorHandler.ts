@@ -42,23 +42,22 @@ export const apiFetch = async (
   const baseUrl = getApiBaseUrl();
   const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
 
-  const defaultHeaders: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
+  // Create headers object with proper type handling
+  const headers = new Headers(options.headers);
+  headers.set('Content-Type', 'application/json');
 
   // Add auth token if available
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
     if (token) {
-      defaultHeaders['Authorization'] = `Bearer ${token}`;
+      headers.set('Authorization', `Bearer ${token}`);
     }
   }
 
   try {
     const response = await fetch(url, {
       ...options,
-      headers: defaultHeaders,
+      headers: headers,
     });
 
     // Handle different response statuses
