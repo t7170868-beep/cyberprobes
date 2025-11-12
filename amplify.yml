@@ -10,6 +10,7 @@ frontend:
         - echo "🧩 Installing type declarations..."
         - npm install --save-dev @types/bcrypt
         - npm install --save-dev @types/react-google-recaptcha
+        - echo "✅ Type declarations installed"
         - echo "🔧 Running Prisma commands..."
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
