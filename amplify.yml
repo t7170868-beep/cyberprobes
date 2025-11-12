@@ -3,13 +3,19 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "🧹 Cleaning cache and old node modules..."
         - rm -rf node_modules package-lock.json
+        - echo "📦 Installing dependencies..."
         - npm install
+        - echo "🧩 Installing type declarations..."
         - npm install --save-dev @types/bcrypt
+        - npm install --save-dev @types/react-google-recaptcha
+        - echo "🔧 Running Prisma commands..."
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
       commands:
+        - echo "🚀 Building Next.js app..."
         - npm run build
   artifacts:
     baseDirectory: .next
@@ -17,5 +23,4 @@ frontend:
       - '**/*'
   cache:
     paths:
-      - .next/cache/**/*
-
+      - node_modules/**/*
