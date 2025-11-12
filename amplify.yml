@@ -5,6 +5,7 @@ frontend:
       commands:
         - rm -rf node_modules package-lock.json
         - npm install
+        - npm install --save-dev @types/bcrypt
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
