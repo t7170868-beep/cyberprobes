@@ -5,10 +5,12 @@
  * @returns The base URL string, either from NEXT_PUBLIC_BASE_URL or a hardcoded fallback
  */
 export function getBaseURL(): string {
-  return (
-    process.env.NEXT_PUBLIC_BASE_URL?.trim() ||
-    "https://main.d1ce8jq8iz0ibb.amplifyapp.com"
-  );
+  const envUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim();
+  // Return fallback if env var is missing, empty, or invalid
+  if (!envUrl || envUrl === '') {
+    return "https://main.d1ce8jq8iz0ibb.amplifyapp.com";
+  }
+  return envUrl;
 }
 
 /**
@@ -18,6 +20,11 @@ export function getBaseURL(): string {
  * @returns A URL object with the base URL
  */
 export function getBaseURLObject(): URL {
-  return new URL(getBaseURL());
+  const baseUrl = getBaseURL();
+  // Double-check that we have a valid URL string before creating URL object
+  if (!baseUrl || baseUrl === '') {
+    return new URL("https://main.d1ce8jq8iz0ibb.amplifyapp.com");
+  }
+  return new URL(baseUrl);
 }
 
