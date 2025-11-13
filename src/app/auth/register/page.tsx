@@ -138,6 +138,7 @@ export default function RegisterPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                autoComplete="name"
                 className="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-600 text-white font-inter focus:border-cyber-blue focus:outline-none transition-colors"
                 placeholder="John Doe"
                 pattern="[a-zA-Z\s]+"
@@ -158,6 +159,7 @@ export default function RegisterPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                autoComplete="email"
                 className="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-600 text-white font-inter focus:border-cyber-blue focus:outline-none transition-colors"
                 placeholder="your.email@example.com"
                 pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
@@ -178,6 +180,7 @@ export default function RegisterPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  autoComplete="new-password"
                   className="w-full px-4 py-3 pr-12 rounded-lg bg-black/40 border border-gray-600 text-white font-inter focus:border-cyber-blue focus:outline-none transition-colors"
                   placeholder="Strong password required"
                   minLength={8}
@@ -216,6 +219,7 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  autoComplete="new-password"
                   className="w-full px-4 py-3 pr-12 rounded-lg bg-black/40 border border-gray-600 text-white font-inter focus:border-cyber-blue focus:outline-none transition-colors"
                   placeholder="Re-enter your password"
                   required

@@ -259,6 +259,7 @@ export default function ContactPage() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        autoComplete="name"
                         required
                         pattern="^[A-Za-z\s\.\-']+$"
                         title="Name should only contain letters, spaces, periods, hyphens, or apostrophes"
@@ -278,6 +279,7 @@ export default function ContactPage() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        autoComplete="email"
                         required
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                         title="Please enter a valid email address"
@@ -299,6 +301,7 @@ export default function ContactPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        autoComplete="tel"
                         pattern="^[0-9()\-\s+]+$"
                         title="Phone number should only contain numbers, parentheses, hyphens, spaces, and plus sign"
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
