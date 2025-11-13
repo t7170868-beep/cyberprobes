@@ -1,11 +1,14 @@
 import { Metadata } from 'next';
-import { getBaseURLObject } from '@/lib/getBaseURL';
 
 export const metadata: Metadata = {
   title: "Privacy Policy - CyberProbes Digital Forensics",
   description: "CyberProbes privacy policy outlining how we collect, use, and protect your personal information in compliance with GDPR and data protection laws.",
   keywords: "privacy policy, data protection, GDPR compliance, digital forensics privacy, cybersecurity privacy",
-  metadataBase: getBaseURLObject(),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL?.startsWith("http")
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : "https://main.d1ce8jq8iz0ibb.amplifyapp.com"
+  ),
   alternates: {
     canonical: '/legal/privacy-policy',
   },

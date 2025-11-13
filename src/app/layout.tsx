@@ -8,7 +8,6 @@ import Navbar from '@/components/Navbar';
 import EmergencyWidget from '@/components/EmergencyWidget';
 import SmoothScroll from '@/components/SmoothScroll';
 import GlobalErrorHandler from '@/components/GlobalErrorHandler';
-import { getBaseURLObject } from '@/lib/getBaseURL';
 
 export const metadata: Metadata = {
   title: "CyberProbes - Digital Forensics & Cybersecurity",
@@ -22,8 +21,12 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  // Use helper function with safe fallback to avoid build-time errors
-  metadataBase: getBaseURLObject(),
+  // Use simple ternary with safe fallback to avoid build-time errors
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL?.startsWith("http")
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : "https://main.d1ce8jq8iz0ibb.amplifyapp.com"
+  ),
   alternates: {
     canonical: '/',
   },
