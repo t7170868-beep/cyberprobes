@@ -13,6 +13,9 @@ frontend:
         - npm install --save-dev @types/jsonwebtoken
         - echo "✅ Type declarations installed"
         - echo "🔧 Running Prisma commands..."
+        - echo "🔍 Debug: Checking DATABASE_URL..."
+        - echo "DB URL starts with: ${DATABASE_URL:0:30}" || echo "⚠️ DATABASE_URL is empty or not set!"
+        - echo "🔍 Debug: DATABASE_URL length: ${#DATABASE_URL}" || echo "⚠️ DATABASE_URL check failed"
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
