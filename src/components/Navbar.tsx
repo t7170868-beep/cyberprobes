@@ -14,7 +14,10 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const hideGlobalLoginCta = pathname?.startsWith('/courses') || pathname?.startsWith('/cyber-courses');
+  const hideGlobalLoginCta =
+    pathname?.startsWith('/courses') ||
+    pathname?.startsWith('/cyber-courses') ||
+    pathname === '/contact';
 
   // After mounting, we can safely show the UI
   useEffect(() => {
