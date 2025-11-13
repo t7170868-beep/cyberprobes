@@ -26,10 +26,21 @@ declare module "next-auth/jwt" {
 
 // We're using SQLite, so we don't need the PrismaAdapter
 const resolveSecret = () => {
-  const secretFromEnv = process.env.NEXTAUTH_SECRET?.trim();
+  const candidateSecrets = [
+    process.env.NEXTAUTH_SECRET,
+    process.env.AUTH_SECRET,
+    process.env.JWT_SECRET,
+  ].filter(Boolean) as string[];
 
-  if (secretFromEnv && secretFromEnv !== "your-default-secret-do-not-use-in-production") {
-    return secretFromEnv;
+  if (candidateSecrets.length > 0) {
+    const resolved = candidateSecrets[0]!.trim();
+
+    if (resolved && resolved !== "your-default-secret-do-not-use-in-production") {
+      if (process.env.NODE_ENV === "development") {
+        console.info("[auth] Using secret from environment:", candidateSecrets.length > 1 ? "fallback variable" : "NEXTAUTH_SECRET");
+      }
+      return resolved;
+    }
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -39,6 +50,7 @@ const resolveSecret = () => {
     return generated;
   }
 
+  console.error("[auth] NEXTAUTH_SECRET (or fallback AUTH/JWT secret) is missing in production. Check Amplify env vars.");
   throw new Error("NEXTAUTH_SECRET environment variable is required in production.");
 };
 
