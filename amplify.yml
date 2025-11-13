@@ -14,7 +14,7 @@ frontend:
         - echo "✅ Type declarations installed"
         - echo "🔧 Running Prisma commands..."
         - echo "🔍 Debug: Checking DATABASE_URL..."
-        - echo "DB URL starts with: ${DATABASE_URL:0:30}" || echo "⚠️ DATABASE_URL is empty or not set!"
+        - 'if [ -n "$DATABASE_URL" ]; then echo "DB URL detected"; else echo "⚠️ DATABASE_URL is empty or not set!"; fi'
         - echo "🔍 Debug: DATABASE_URL check complete"
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
