@@ -28,11 +28,11 @@ export async function middleware(request: NextRequest) {
     
     const scriptSrc = isDevelopment
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com"
-      : "script-src 'self' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com";
+      : "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.google.com https://www.gstatic.com";
     
     const styleSrc = isDevelopment
       ? "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com"
-      : "style-src 'self' https://cdn.tailwindcss.com https://fonts.googleapis.com";
+      : "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com";
     
     const csp = [
       "default-src 'self'",
