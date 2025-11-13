@@ -3,35 +3,20 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Cleaning cache and old node modules"
+        - echo "✅ Cleaning old installs"
         - rm -rf node_modules package-lock.json
-        - echo "Installing dependencies"
         - npm install
         - echo "Installing type declarations"
         - npm install --save-dev @types/bcrypt
         - npm install --save-dev @types/react-google-recaptcha
         - npm install --save-dev @types/jsonwebtoken
-        - echo "Type declarations installed"
         - echo "Running Prisma commands"
-        - 'if [ -n "$DATABASE_URL" ]; then echo "DATABASE_URL is set"; echo "DATABASE_URL starts with: $(echo "$DATABASE_URL" | cut -c1-30)"; else echo "WARNING DATABASE_URL is empty"; fi'
-        - 'export DATABASE_URL=$(echo "$DATABASE_URL" | xargs)'
-        - echo "DATABASE_URL trimmed"
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
       commands:
-        - echo "Building Next.js app"
-        - echo "Exporting environment variables for runtime"
-        # Explicitly export all required environment variables
-        - export DATABASE_URL=$DATABASE_URL
-        - export NEXTAUTH_SECRET=$NEXTAUTH_SECRET
-        - export NEXTAUTH_URL=$NEXTAUTH_URL
-        - export JWT_SECRET=$JWT_SECRET
-        - export NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
-        - export NODE_ENV=production
-        # Verify environment variables are set
-        - 'if [ -z "$NEXT_PUBLIC_BASE_URL" ]; then echo "WARNING: NEXT_PUBLIC_BASE_URL is not set"; fi'
-        - 'if [ -z "$NEXTAUTH_SECRET" ]; then echo "WARNING: NEXTAUTH_SECRET is not set"; fi'
+        - echo "✅ Running build with env variables"
+        - echo "DATABASE_URL starts with: $(echo $DATABASE_URL | cut -c1-40)"
         - npm run build
   artifacts:
     baseDirectory: .next
