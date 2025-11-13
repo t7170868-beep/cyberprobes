@@ -10,9 +10,15 @@ frontend:
         - npm install --save-dev @types/bcrypt
         - npm install --save-dev @types/react-google-recaptcha
         - npm install --save-dev @types/jsonwebtoken
+        - echo "=========================================="
+        - echo "⚠️  NOTE: SSM warning above is EXPECTED"
+        - echo "⚠️  If variables are set in Amplify Console,"
+        - echo "⚠️  they work fine despite SSM warning."
+        - echo "=========================================="
         - echo "✅ Setting up environment variables (bypassing SSM)..."
         # Explicitly export all critical variables to ensure they're available
         # This bypasses SSM Parameter Store issues
+        # SSM warning is harmless if variables are set in Amplify Console
         - |
           if [ -n "$DATABASE_URL" ]; then
             export DATABASE_URL="$DATABASE_URL"
