@@ -3,19 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  slug: string;
-  thumbnail?: string;
-  category: string;
-  level: string;
-  duration?: string;
-  price: number;
-  instructor?: string;
-}
+import FALLBACK_COURSES from '@/data/fallbackCourses';
+import type { CourseSummary } from '@/types/course';
 
 const courseCategories = [
   { id: 'all', name: 'All Courses', icon: '📚' },
@@ -27,8 +16,8 @@ const courseCategories = [
 ];
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseSummary[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<CourseSummary[]>([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [loading, setLoading] = useState(true);
 
@@ -44,14 +33,33 @@ export default function CoursesPage() {
     }
   }, [activeCategory, courses]);
 
+  const applyCourses = (data: CourseSummary[]) => {
+    setCourses(data);
+    if (activeCategory === 'all') {
+      setFilteredCourses(data);
+    } else {
+      setFilteredCourses(data.filter((c) => c.category === activeCategory));
+    }
+  };
+
   const fetchCourses = async () => {
     try {
       const res = await fetch('/api/courses?published=true');
-      const data = await res.json();
-      setCourses(data);
-      setFilteredCourses(data);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch courses: ${res.status}`);
+      }
+
+      const data: CourseSummary[] = await res.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        console.warn('Courses API returned no data, using fallback catalogue');
+        applyCourses(FALLBACK_COURSES);
+        return;
+      }
+
+      applyCourses(data);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error fetching courses, using fallback catalogue instead:', error);
+      applyCourses(FALLBACK_COURSES);
     } finally {
       setLoading(false);
     }

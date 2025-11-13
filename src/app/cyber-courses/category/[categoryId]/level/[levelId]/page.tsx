@@ -4,24 +4,14 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-
-// Define course type
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  slug: string;
-  published: boolean;
-  image?: string;
-  createdAt: string;
-  materials?: any[];
-}
+import FALLBACK_COURSES from '@/data/fallbackCourses';
+import type { CourseSummary } from '@/types/course';
 
 export default function CourseLevelPage() {
   const params = useParams();
   const { categoryId, levelId } = params;
   
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -54,21 +44,38 @@ export default function CourseLevelPage() {
           throw new Error('Failed to fetch courses');
         }
         
-        const allCourses = await response.json();
+        const allCourses: CourseSummary[] = await response.json();
         
         // Filter courses by category and level
         // In a real implementation, you would have category and level fields
         // For now, we'll just simulate filtering based on the category and level params
-        const filteredCourses = allCourses.filter((course: Course) => {
-          // This is a placeholder filter - in a real application, you would
-          // have proper category and level fields to filter by
-          return course.published === true;
-        });
-        
+        let filteredCourses = allCourses.filter((course) => course.published === true);
+
+        if (filteredCourses.length === 0) {
+          const fallbackFiltered = FALLBACK_COURSES.filter(
+            (course) =>
+              course.categorySlug === (categoryId as string) &&
+              course.levelSlug === (levelId as string)
+          );
+          if (fallbackFiltered.length > 0) {
+            setCourses(fallbackFiltered);
+            return;
+          }
+        }
+
         setCourses(filteredCourses);
       } catch (error) {
         console.error('Error fetching courses:', error);
-        setError('Failed to load courses. Please try again.');
+        const fallbackFiltered = FALLBACK_COURSES.filter(
+          (course) =>
+            course.categorySlug === (categoryId as string) &&
+            course.levelSlug === (levelId as string)
+        );
+        if (fallbackFiltered.length > 0) {
+          setCourses(fallbackFiltered);
+        } else {
+          setError('Failed to load courses. Please try again.');
+        }
       } finally {
         setIsLoading(false);
       }

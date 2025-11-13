@@ -5,43 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  slug: string;
-  thumbnail?: string;
-  category: string;
-  level: string;
-  duration?: string;
-  price: number;
-  instructor?: string;
-  instructorBio?: string;
-  instructorPhoto?: string;
-  whatYoullLearn?: string;
-  prerequisites?: string;
-  skillsCovered?: string;
-  certification?: string;
-  published: boolean;
-  modules?: Array<{
-    id: string;
-    title: string;
-    description?: string;
-    order: number;
-    duration?: string;
-    materials: Array<{
-      id: string;
-      title: string;
-      type: string;
-      duration?: string;
-      order?: number;
-    }>;
-  }>;
-  enrollments?: Array<{
-    userId: string;
-  }>;
-}
+import FALLBACK_COURSES from '@/data/fallbackCourses';
+import type { CourseSummary } from '@/types/course';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -49,7 +14,7 @@ export default function CourseDetailPage() {
   const { data: session } = useSession();
   const { slug } = params;
   
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [isEnrolling, setIsEnrolling] = useState(false);
@@ -60,16 +25,24 @@ export default function CourseDetailPage() {
   }, [slug, session]);
 
   const fetchCourse = async () => {
+    const fallbackMatch = FALLBACK_COURSES.find((c) => c.slug === slug);
+
     try {
       setIsLoading(true);
       const response = await fetch(`/api/courses?published=true`);
-      
-      if (!response.ok) throw new Error('Failed to fetch courses');
-      
-      const courses = await response.json();
-      const foundCourse = courses.find((c: Course) => c.slug === slug);
-      
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+
+      const courses: CourseSummary[] = await response.json();
+      const foundCourse = courses.find((c) => c.slug === slug);
+
       if (!foundCourse) {
+        if (fallbackMatch) {
+          setCourse(fallbackMatch);
+          return;
+        }
         router.push('/courses');
         return;
       }
@@ -77,9 +50,9 @@ export default function CourseDetailPage() {
       // Fetch full course details
       const courseRes = await fetch(`/api/courses/${foundCourse.id}`);
       if (courseRes.ok) {
-        const fullCourse = await courseRes.json();
+        const fullCourse: CourseSummary = await courseRes.json();
         setCourse(fullCourse);
-        
+
         // Check if user is enrolled
         if (session?.user?.email) {
           const enrollmentRes = await fetch(`/api/enrollments/check?courseId=${fullCourse.id}`);
@@ -93,13 +66,22 @@ export default function CourseDetailPage() {
       }
     } catch (error) {
       console.error('Error fetching course:', error);
-      setError('Failed to load course details.');
+      if (fallbackMatch) {
+        setCourse(fallbackMatch);
+      } else {
+        setError('Failed to load course details.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleEnroll = async () => {
+    if (course?.id.startsWith('static-')) {
+      setError('Online enrollment for this course opens soon. Contact our team to reserve your seat.');
+      return;
+    }
+
     if (!session) {
       // Redirect to login with callback to current course
       router.push(`/auth/login?callbackUrl=${encodeURIComponent('/courses/' + slug)}`);
@@ -140,7 +122,7 @@ export default function CourseDetailPage() {
   };
 
   const initializeRazorpayPayment = async () => {
-    if (!course) return;
+    if (!course || course.id.startsWith('static-')) return;
 
     try {
       // Create order on backend
@@ -243,7 +225,7 @@ export default function CourseDetailPage() {
     );
   }
 
-  if (!course) return null;
+    if (!course) return null;
 
   const learnPoints = course.whatYoullLearn ? JSON.parse(course.whatYoullLearn) : [];
   const prerequisites = course.prerequisites ? JSON.parse(course.prerequisites) : [];

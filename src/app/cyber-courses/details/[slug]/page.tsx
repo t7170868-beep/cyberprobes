@@ -4,24 +4,15 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  slug: string;
-  published: boolean;
-  image?: string;
-  createdAt: string;
-  materials: any[];
-}
+import FALLBACK_COURSES from '@/data/fallbackCourses';
+import type { CourseSummary } from '@/types/course';
 
 export default function CourseDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { slug } = params;
   
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -36,12 +27,17 @@ export default function CourseDetailsPage() {
           throw new Error('Failed to fetch courses');
         }
         
-        const courses = await response.json();
+        const courses: CourseSummary[] = await response.json();
         
         // Find the course with matching slug
-        const foundCourse = courses.find((c: Course) => c.slug === slug);
+        const foundCourse = courses.find((c) => c.slug === slug);
         
         if (!foundCourse) {
+          const fallbackMatch = FALLBACK_COURSES.find((c) => c.slug === slug);
+          if (fallbackMatch) {
+            setCourse(fallbackMatch);
+            return;
+          }
           // If course not found or not published, redirect to courses page
           router.push('/cyber-courses');
           return;
@@ -50,7 +46,12 @@ export default function CourseDetailsPage() {
         setCourse(foundCourse);
       } catch (error) {
         console.error('Error fetching course:', error);
-        setError('Failed to load course details. Please try again.');
+        const fallbackMatch = FALLBACK_COURSES.find((c) => c.slug === slug);
+        if (fallbackMatch) {
+          setCourse(fallbackMatch);
+        } else {
+          setError('Failed to load course details. Please try again.');
+        }
       } finally {
         setIsLoading(false);
       }
