@@ -22,16 +22,27 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: (() => {
-    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com').trim();
-    // Validate URL string before creating URL object
-    if (!baseUrl || baseUrl === '' || !baseUrl.startsWith('http')) {
-      return new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com');
-    }
+    const FALLBACK_URL = 'https://main.d1ce8jq8iz0ibb.amplifyapp.com';
     try {
-      return new URL(baseUrl);
-    } catch {
-      // Fallback if URL is invalid
-      return new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com');
+      const envUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const baseUrl = envUrl ? String(envUrl).trim() : FALLBACK_URL;
+      
+      // Validate URL string before creating URL object
+      if (!baseUrl || baseUrl === '' || (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://'))) {
+        return new URL(FALLBACK_URL);
+      }
+      
+      // Try to create URL object
+      const url = new URL(baseUrl);
+      return url;
+    } catch (error) {
+      // If anything fails, use fallback
+      try {
+        return new URL(FALLBACK_URL);
+      } catch {
+        // Last resort - return undefined (Next.js will handle it)
+        return undefined as any;
+      }
     }
   })(),
   alternates: {
