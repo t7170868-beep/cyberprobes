@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
+import { getBaseURLObject } from '@/lib/getBaseURL';
 
 export const metadata: Metadata = {
   title: "Chain of Custody Protocol - CyberProbes Digital Forensics",
   description: "Learn about CyberProbes' chain of custody procedures ensuring evidence integrity and legal admissibility in digital forensic investigations.",
   keywords: "chain of custody, digital evidence, forensic procedures, evidence integrity, legal admissibility",
-  metadataBase: new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com'),
+  metadataBase: getBaseURLObject(),
   alternates: {
     canonical: '/legal/chain-of-custody',
   },
