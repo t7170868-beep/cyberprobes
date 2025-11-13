@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 
+// Disable prerendering to prevent build-time URL errors
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Minimal Test - CyberProbes",
   description: "Minimal test page",
