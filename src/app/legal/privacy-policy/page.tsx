@@ -4,6 +4,16 @@ export const metadata: Metadata = {
   title: "Privacy Policy - CyberProbes Digital Forensics",
   description: "CyberProbes privacy policy outlining how we collect, use, and protect your personal information in compliance with GDPR and data protection laws.",
   keywords: "privacy policy, data protection, GDPR compliance, digital forensics privacy, cybersecurity privacy",
+  metadataBase: new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com'),
+  alternates: {
+    canonical: '/legal/privacy-policy',
+  },
+  openGraph: {
+    title: "Privacy Policy - CyberProbes Digital Forensics",
+    description: "CyberProbes privacy policy outlining how we collect, use, and protect your personal information in compliance with GDPR and data protection laws.",
+    url: '/legal/privacy-policy',
+    type: 'website',
+  },
 };
 
 export default function PrivacyPolicyPage() {

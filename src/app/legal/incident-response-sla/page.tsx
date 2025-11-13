@@ -4,6 +4,16 @@ export const metadata: Metadata = {
   title: "Incident Response SLA - CyberProbes Digital Forensics",
   description: "CyberProbes incident response service level agreements with guaranteed response times and 24/7 emergency support for critical security incidents.",
   keywords: "incident response SLA, emergency response, cybersecurity SLA, response times, 24/7 support",
+  metadataBase: new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com'),
+  alternates: {
+    canonical: '/legal/incident-response-sla',
+  },
+  openGraph: {
+    title: "Incident Response SLA - CyberProbes Digital Forensics",
+    description: "CyberProbes incident response service level agreements with guaranteed response times and 24/7 emergency support for critical security incidents.",
+    url: '/legal/incident-response-sla',
+    type: 'website',
+  },
 };
 
 export default function IncidentResponseSLAPage() {
