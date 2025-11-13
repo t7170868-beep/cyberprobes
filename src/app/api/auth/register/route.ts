@@ -45,11 +45,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
-    // Validate strong password (12 characters minimum, consistent with security.ts)
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{12,}$/;
+    // Validate strong password (8+ chars, uppercase, lowercase, number, special char)
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
     if (!passwordPattern.test(password)) {
       return NextResponse.json({ 
-        error: 'Password must be at least 12 characters and include uppercase, lowercase, number, and special character' 
+        error: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character (@$!%*?&#)' 
       }, { status: 400 });
     }
 
