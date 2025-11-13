@@ -21,30 +21,8 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: (() => {
-    const FALLBACK_URL = 'https://main.d1ce8jq8iz0ibb.amplifyapp.com';
-    try {
-      const envUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const baseUrl = envUrl ? String(envUrl).trim() : FALLBACK_URL;
-      
-      // Validate URL string before creating URL object
-      if (!baseUrl || baseUrl === '' || (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://'))) {
-        return new URL(FALLBACK_URL);
-      }
-      
-      // Try to create URL object
-      const url = new URL(baseUrl);
-      return url;
-    } catch (error) {
-      // If anything fails, use fallback
-      try {
-        return new URL(FALLBACK_URL);
-      } catch {
-        // Last resort - return undefined (Next.js will handle it)
-        return undefined as any;
-      }
-    }
-  })(),
+  // Use a simple, always-valid URL to avoid build-time errors
+  metadataBase: new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com'),
   alternates: {
     canonical: '/',
   },
