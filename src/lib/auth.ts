@@ -176,6 +176,13 @@ export const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30 days for better security)
   },
   secret: resolveSecret(),
-  // NEXTAUTH_URL is read from environment variable automatically by NextAuth
-  // No need to set it in authOptions
-}; 
+  // Ensure NEXTAUTH_URL is available - use NEXT_PUBLIC_BASE_URL as fallback
+  // This is set at runtime, not in config, but we ensure it's available
+  debug: process.env.NODE_ENV === "development",
+};
+
+// Set NEXTAUTH_URL at runtime if missing (NextAuth reads from process.env)
+if (!process.env.NEXTAUTH_URL && process.env.NEXT_PUBLIC_BASE_URL) {
+  process.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_BASE_URL;
+  console.info("[auth] Using NEXT_PUBLIC_BASE_URL as NEXTAUTH_URL fallback");
+} 
