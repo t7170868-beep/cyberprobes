@@ -56,10 +56,15 @@ const resolveSecret = () => {
     AUTH_SECRET: process.env.AUTH_SECRET ? "SET" : "MISSING",
     JWT_SECRET: process.env.JWT_SECRET ? "SET" : "MISSING",
     NODE_ENV: process.env.NODE_ENV || "MISSING",
+    DATABASE_URL: process.env.DATABASE_URL ? "SET" : "MISSING",
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL ? "SET" : "MISSING",
   };
-  console.error("[auth] Secret resolution failed in production. Available vars:", JSON.stringify(availableVars));
+  console.error("[auth] Secret resolution failed in production. Available vars:", JSON.stringify(availableVars, null, 2));
   
-  throw new Error("NEXTAUTH_SECRET environment variable is required in production. Check Amplify Console → App settings → Environment variables.");
+  throw new Error(
+    `NEXTAUTH_SECRET environment variable is required. Available vars: ${JSON.stringify(availableVars)}. ` +
+    `Please set NEXTAUTH_SECRET in AWS Amplify Console → Environment Variables.`
+  );
 };
 
 export const authOptions: NextAuthOptions = {
