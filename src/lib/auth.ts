@@ -50,8 +50,16 @@ const resolveSecret = () => {
     return generated;
   }
 
-  console.error("[auth] NEXTAUTH_SECRET (or fallback AUTH/JWT secret) is missing in production. Check Amplify env vars.");
-  throw new Error("NEXTAUTH_SECRET environment variable is required in production.");
+  // In production, log available env vars for debugging
+  const availableVars = {
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? "SET" : "MISSING",
+    AUTH_SECRET: process.env.AUTH_SECRET ? "SET" : "MISSING",
+    JWT_SECRET: process.env.JWT_SECRET ? "SET" : "MISSING",
+    NODE_ENV: process.env.NODE_ENV || "MISSING",
+  };
+  console.error("[auth] Secret resolution failed in production. Available vars:", JSON.stringify(availableVars));
+  
+  throw new Error("NEXTAUTH_SECRET environment variable is required in production. Check Amplify Console → App settings → Environment variables.");
 };
 
 export const authOptions: NextAuthOptions = {
