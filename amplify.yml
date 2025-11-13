@@ -16,7 +16,7 @@ frontend:
     build:
       commands:
         - echo "✅ Running build with env variables"
-        - echo "DATABASE_URL starts with: $(echo $DATABASE_URL | cut -c1-40)"
+        - 'echo "DATABASE_URL starts with: $(echo $DATABASE_URL | cut -c1-40)"'
         - npm run build
   artifacts:
     baseDirectory: .next
