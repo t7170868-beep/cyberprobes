@@ -11,11 +11,9 @@ frontend:
         - npm install --save-dev @types/bcrypt
         - npm install --save-dev @types/react-google-recaptcha
         - npm install --save-dev @types/jsonwebtoken
-        - echo "✅ Type declarations installed"
-        - echo "🔧 Running Prisma commands..."
-        - echo "🔍 Debug: Checking DATABASE_URL..."
-        - 'if [ -n "$DATABASE_URL" ]; then echo "DB URL detected"; else echo "⚠️ DATABASE_URL is empty or not set!"; fi'
-        - echo "🔍 Debug: DATABASE_URL check complete"
+        - echo "Type declarations installed"
+        - echo "Running Prisma commands"
+        - 'if [ -n "$DATABASE_URL" ]; then echo "DATABASE_URL is set"; else echo "WARNING: DATABASE_URL is empty"; fi'
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
