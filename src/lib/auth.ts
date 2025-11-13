@@ -59,10 +59,19 @@ export const authOptions: NextAuthOptions = {
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
-          // Direct database validation using Prisma
-          const user = await prisma.user.findUnique({
-            where: { email: normalizedEmail }
-          });
+          // Direct database validation using Prisma with error handling
+          let user;
+          try {
+            user = await prisma.user.findUnique({
+              where: { email: normalizedEmail }
+            });
+          } catch (dbError) {
+            // Database connection error - log but don't expose
+            if (process.env.NODE_ENV === 'development') {
+              console.error("Database error during authorization:", dbError);
+            }
+            return null;
+          }
 
           if (!user) {
             return null;
@@ -106,17 +115,29 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       // Add role and id to token when user logs in
-      if (user) {
-        token.role = (user as any).role;
-        token.id = user.id;
+      try {
+        if (user) {
+          token.role = (user as any).role;
+          token.id = user.id;
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error("JWT callback error:", error);
+        }
       }
       return token;
     },
     async session({ session, token }) {
       // Add role and id to session from token
-      if (session.user) {
-        session.user.role = token.role;
-        session.user.id = token.id;
+      try {
+        if (session.user) {
+          session.user.role = token.role;
+          session.user.id = token.id;
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error("Session callback error:", error);
+        }
       }
       return session;
     }
