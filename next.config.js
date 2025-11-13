@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for Docker deployment
+  // Enable standalone output for AWS Amplify (NOT 'export' - that breaks API routes)
   output: 'standalone',
   typescript: {
     // In production, type errors should be fixed before deployment
