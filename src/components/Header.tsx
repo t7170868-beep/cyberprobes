@@ -65,11 +65,7 @@ export default function Header() {
                   Logout
                 </button>
               </>
-            ) : (
-              <Link href="/auth/login" className={`text-gray-600 hover:text-blue-600 ${isActive('/auth/login')}`}>
-                Login / Register
-              </Link>
-            )}
+            ) : null}
           </nav>
           
           {/* Mobile menu button */}
@@ -144,15 +140,7 @@ export default function Header() {
                     Logout
                   </button>
                 </>
-              ) : (
-                <Link 
-                  href="/auth/login" 
-                  className={`text-gray-600 hover:text-blue-600 ${isActive('/auth/login')}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Login / Register
-                </Link>
-              )}
+              ) : null}
             </nav>
           </div>
         )}
