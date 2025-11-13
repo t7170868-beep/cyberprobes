@@ -1,10 +1,13 @@
 import { Metadata } from 'next';
-import { getBaseURLObject } from '@/lib/getBaseURL';
 
 export const metadata: Metadata = {
   title: "Minimal Test - CyberProbes",
   description: "Minimal test page",
-  metadataBase: getBaseURLObject(),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL?.startsWith("http")
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : "https://main.d1ce8jq8iz0ibb.amplifyapp.com"
+  ),
   alternates: {
     canonical: '/minimal',
   },
