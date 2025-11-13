@@ -26,12 +26,14 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(courses);
   } catch (error) {
-    const errorMessage = process.env.NODE_ENV === 'production' 
-      ? 'Failed to fetch courses' 
-      : (error as Error).message;
-    
+    console.error('GET /api/courses failed', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
     return NextResponse.json(
-      { error: errorMessage },
+      {
+        error: 'Failed to fetch courses',
+        details: process.env.NODE_ENV === 'production' ? undefined : errorMessage,
+      },
       { status: 500 }
     );
   }
