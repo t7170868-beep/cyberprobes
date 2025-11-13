@@ -19,7 +19,9 @@ frontend:
         # Explicitly export DATABASE_URL to ensure it's available for Prisma
         - export DATABASE_URL="$DATABASE_URL"
         - npx prisma generate --schema=./prisma/schema.prisma
-        - npx prisma db push --accept-data-loss --skip-generate
+        # Skip db push during build - schema should already be in sync
+        # If schema changes are needed, run manually or use migrations
+        - echo "Skipping prisma db push (schema should already be in sync)"
     build:
       commands:
         - echo "✅ Running build with env variables"
