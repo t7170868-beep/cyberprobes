@@ -11,6 +11,9 @@ frontend:
         - npm install --save-dev @types/react-google-recaptcha
         - npm install --save-dev @types/jsonwebtoken
         - echo "Running Prisma commands"
+        - echo "Checking DATABASE_URL..."
+        - 'if [ -z "$DATABASE_URL" ]; then echo "ERROR: DATABASE_URL is not set"; exit 1; fi'
+        - 'echo "DATABASE_URL starts with: $(echo $DATABASE_URL | cut -c1-40)"'
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
