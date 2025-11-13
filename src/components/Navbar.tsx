@@ -14,6 +14,8 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const hideGlobalLoginCta = pathname?.startsWith('/courses') || pathname?.startsWith('/cyber-courses');
+
   // After mounting, we can safely show the UI
   useEffect(() => {
     setMounted(true);
@@ -86,9 +88,11 @@ export default function Navbar() {
                   <Link href="/courses" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/courses')}`}>
                     Courses
                   </Link>
-                  <Link href="/auth/login" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/auth/login')} px-4 py-2 rounded-lg bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue hover:text-white`}>
-                    Login
-                  </Link>
+                  {!hideGlobalLoginCta && (
+                    <Link href="/auth/login" className={`font-rajdhani font-medium transition-all duration-300 ${isActive('/auth/login')} px-4 py-2 rounded-lg bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue hover:text-white`}>
+                      Login
+                    </Link>
+                  )}
                 </>
               )}
             </nav>
@@ -186,13 +190,15 @@ export default function Navbar() {
                   >
                     Courses
                   </Link>
-                  <Link 
-                    href="/auth/login" 
-                    className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/auth/login')} px-4 py-2 rounded-lg bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue hover:text-white`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
+                  {!hideGlobalLoginCta && (
+                    <Link 
+                      href="/auth/login" 
+                      className={`text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${isActive('/auth/login')} px-4 py-2 rounded-lg bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue hover:text-white`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                  )}
                 </>
               )}
             </nav>
