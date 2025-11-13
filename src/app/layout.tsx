@@ -21,7 +21,15 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com'),
+  metadataBase: (() => {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com';
+    try {
+      return new URL(baseUrl);
+    } catch {
+      // Fallback if URL is invalid
+      return new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com');
+    }
+  })(),
   alternates: {
     canonical: '/',
   },
