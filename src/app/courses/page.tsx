@@ -75,7 +75,12 @@ export default function CoursesPage() {
           {courseCategories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveCategory(category.id);
+              }}
               className={`px-6 py-3 rounded-xl font-rajdhani font-semibold transition-all magnetic-button ${
                 activeCategory === category.id
                   ? 'glass-card border-2 border-cyber-blue bg-cyber-blue/20 text-white'
