@@ -14,6 +14,10 @@ frontend:
         - echo "Checking DATABASE_URL..."
         - 'if [ -z "$DATABASE_URL" ]; then echo "ERROR: DATABASE_URL is not set"; exit 1; fi'
         - 'echo "DATABASE_URL starts with: $(echo $DATABASE_URL | cut -c1-40)"'
+        - 'echo "DATABASE_URL length: $(echo -n $DATABASE_URL | wc -c)"'
+        - 'echo "DATABASE_URL ends with: $(echo $DATABASE_URL | tail -c 50)"'
+        # Explicitly export DATABASE_URL to ensure it's available for Prisma
+        - export DATABASE_URL="$DATABASE_URL"
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
