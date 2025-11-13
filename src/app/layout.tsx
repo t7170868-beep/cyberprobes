@@ -22,7 +22,11 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: (() => {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com';
+    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://main.d1ce8jq8iz0ibb.amplifyapp.com').trim();
+    // Validate URL string before creating URL object
+    if (!baseUrl || baseUrl === '' || !baseUrl.startsWith('http')) {
+      return new URL('https://main.d1ce8jq8iz0ibb.amplifyapp.com');
+    }
     try {
       return new URL(baseUrl);
     } catch {
