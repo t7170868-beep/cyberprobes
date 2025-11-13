@@ -2,9 +2,9 @@ export interface CourseMaterial {
   id: string;
   title: string;
   type: string;
-  duration?: string;
-  order?: number;
-  contentUrl?: string;
+  duration?: string | null;
+  order?: number | null;
+  contentUrl?: string | null;
 }
 
 export interface CourseModule {
@@ -12,8 +12,8 @@ export interface CourseModule {
   title: string;
   description?: string;
   order: number;
-  duration?: string;
-  materials?: CourseMaterial[];
+  duration?: string | null;
+  materials?: CourseMaterial[] | null;
 }
 
 export interface CourseSummary {
@@ -25,21 +25,22 @@ export interface CourseSummary {
   level: string;
   price: number;
   published: boolean;
-  thumbnail?: string;
-  image?: string;
-  duration?: string;
-  instructor?: string;
-  instructorBio?: string;
-  instructorPhoto?: string;
-  whatYoullLearn?: string;
-  prerequisites?: string;
-  skillsCovered?: string;
-  certification?: string;
-  createdAt?: string;
+  thumbnail?: string | null;
+  image?: string | null;
+  duration?: string | null;
+  instructor?: string | null;
+  instructorBio?: string | null;
+  instructorPhoto?: string | null;
+  whatYoullLearn?: string | null;
+  prerequisites?: string | null;
+  skillsCovered?: string | null;
+  certification?: string | null;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   categorySlug?: string;
   levelSlug?: string;
   materials?: CourseMaterial[];
-  modules?: CourseModule[];
+  modules?: CourseModule[] | null;
 }
 
 

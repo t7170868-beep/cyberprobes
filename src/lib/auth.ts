@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
@@ -24,6 +25,23 @@ declare module "next-auth/jwt" {
 }
 
 // We're using SQLite, so we don't need the PrismaAdapter
+const resolveSecret = () => {
+  const secretFromEnv = process.env.NEXTAUTH_SECRET?.trim();
+
+  if (secretFromEnv && secretFromEnv !== "your-default-secret-do-not-use-in-production") {
+    return secretFromEnv;
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    const generated = crypto.randomBytes(32).toString("hex");
+    console.warn("[auth] NEXTAUTH_SECRET missing. Generated development secret at runtime.");
+    process.env.NEXTAUTH_SECRET = generated;
+    return generated;
+  }
+
+  throw new Error("NEXTAUTH_SECRET environment variable is required in production.");
+};
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -111,14 +129,5 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30 days for better security)
   },
-  secret: (() => {
-    const secret = process.env.NEXTAUTH_SECRET;
-    if (!secret) {
-      throw new Error('NEXTAUTH_SECRET environment variable is required');
-    }
-    if (secret === 'your-default-secret-do-not-use-in-production') {
-      throw new Error('NEXTAUTH_SECRET must be set to a secure value in production');
-    }
-    return secret;
-  })(),
+  secret: resolveSecret(),
 }; 

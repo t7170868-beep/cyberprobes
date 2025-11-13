@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import FALLBACK_COURSES from '@/data/fallbackCourses';
+import type { CourseSummary } from '@/types/course';
 
 // GET /api/courses - Get all courses
 export async function GET(req: NextRequest) {
@@ -16,13 +18,25 @@ export async function GET(req: NextRequest) {
       where = { published: false };
     }
 
-    const courses = await prisma.course.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        materials: true
-      }
-    });
+    let courses: CourseSummary[] = [];
+
+    try {
+      courses = await prisma.course.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          materials: true
+        }
+      });
+    } catch (dbError) {
+      console.error('Prisma query failed for /api/courses, using fallback catalogue instead.', dbError);
+      courses = FALLBACK_COURSES;
+    }
+
+    if (!courses || courses.length === 0) {
+      console.warn('No courses returned from database. Serving fallback catalogue.');
+      courses = FALLBACK_COURSES;
+    }
 
     return NextResponse.json(courses);
   } catch (error) {
