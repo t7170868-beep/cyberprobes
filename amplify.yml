@@ -15,7 +15,7 @@ frontend:
         - echo "If variables are set in Amplify Console,"
         - echo "they work fine despite SSM warning."
         - echo "=========================================="
-        - echo "✅ Setting up environment variables (bypassing SSM)..."
+        - echo "Setting up environment variables (bypassing SSM)..."
         # Explicitly export all critical variables to ensure they're available
         # This bypasses SSM Parameter Store issues
         # SSM warning is harmless if variables are set in Amplify Console
