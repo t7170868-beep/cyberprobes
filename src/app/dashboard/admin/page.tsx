@@ -5,165 +5,209 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-// Mock data for dashboard stats
-const dashboardStats = {
-  users: 42,
-  videos: 24,
-  courses: 5,
-  blogs: 18
-};
+interface DashboardStats {
+  users: number;
+  videos: number;
+  courses: number;
+  blogs: number;
+  payments: number;
+  revenue: number;
+}
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [stats, setStats] = useState<DashboardStats>({
+    users: 0,
+    videos: 0,
+    courses: 0,
+    blogs: 0,
+    payments: 0,
+    revenue: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Check if user is authenticated and has admin role
     if (status === 'unauthenticated') {
       router.push('/auth/login');
     }
-    
-    // In a real application, you would check the user's role
-    // For demo purposes, we'll assume the logged-in user is an admin
+    if (status === 'authenticated') {
+      fetchStats();
+    }
   }, [status, router]);
+
+  const fetchStats = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Fetch all stats in parallel
+      const [usersRes, videosRes, coursesRes, blogsRes, paymentsRes] = await Promise.all([
+        fetch('/api/users'),
+        fetch('/api/videos'),
+        fetch('/api/courses'),
+        fetch('/api/blogs'),
+        fetch('/api/payments'),
+      ]);
+
+      const users = usersRes.ok ? await usersRes.json() : [];
+      const videos = videosRes.ok ? await videosRes.json() : [];
+      const courses = coursesRes.ok ? await coursesRes.json() : [];
+      const blogs = blogsRes.ok ? await blogsRes.json() : [];
+      const payments = paymentsRes.ok ? await paymentsRes.json() : [];
+
+      const completedPayments = payments.filter((p: any) => p.status === 'completed');
+      const revenue = completedPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+
+      setStats({
+        users: users.length || 0,
+        videos: videos.length || 0,
+        courses: courses.length || 0,
+        blogs: blogs.length || 0,
+        payments: payments.length || 0,
+        revenue: revenue || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
-  if (status === 'loading') {
+  if (status === 'loading' || isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">Loading...</p>
-        </div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-cyber-blue border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
   
   if (!session) {
-    return null; // Router will redirect to login
+    return null;
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        <div className="bg-gradient-to-r from-blue-900 to-purple-900 text-white p-6">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <p className="text-gray-200">Manage users, courses, videos, blog posts, and other website content.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-orbitron font-bold text-white mb-2">Admin Dashboard</h1>
+        <p className="text-gray-400 font-rajdhani">Manage users, courses, videos, blog posts, and other website content.</p>
+      </div>
+      
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="glass-card p-6 rounded-xl border border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400 font-rajdhani mb-2">Total Users</p>
+              <h3 className="text-3xl font-orbitron font-bold text-cyber-blue">{stats.users}</h3>
+            </div>
+            <div className="text-4xl">👥</div>
+          </div>
         </div>
         
-        {/* Stats */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-blue-600 font-medium">Total Users</p>
-                  <h3 className="text-3xl font-bold text-blue-900 mt-1">{dashboardStats.users}</h3>
-                </div>
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                </div>
-              </div>
+        <div className="glass-card p-6 rounded-xl border border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400 font-rajdhani mb-2">Total Courses</p>
+              <h3 className="text-3xl font-orbitron font-bold text-neon-green">{stats.courses}</h3>
             </div>
-            
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-green-600 font-medium">Total Courses</p>
-                  <h3 className="text-3xl font-bold text-green-900 mt-1">{dashboardStats.courses}</h3>
-                </div>
-                <div className="bg-green-100 p-3 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-purple-600 font-medium">Total Videos</p>
-                  <h3 className="text-3xl font-bold text-purple-900 mt-1">{dashboardStats.videos}</h3>
-                </div>
-                <div className="bg-purple-100 p-3 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-red-600 font-medium">Total Blog Posts</p>
-                  <h3 className="text-3xl font-bold text-red-900 mt-1">{dashboardStats.blogs}</h3>
-                </div>
-                <div className="bg-red-100 p-3 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <div className="text-4xl">📚</div>
           </div>
-          
-          {/* Management Modules */}
-          <h2 className="text-xl font-semibold mb-6">Management Modules</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Link href="/dashboard/admin/users" className="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-              <div className="p-6">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">User Management</h3>
-                <p className="text-gray-600 mb-4">Create, edit, and manage user accounts. Generate credentials for new users.</p>
-                <span className="text-blue-600 font-medium">Manage Users →</span>
-              </div>
-            </Link>
-            
-            <Link href="/dashboard/admin/courses" className="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-              <div className="p-6">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Course Management</h3>
-                <p className="text-gray-600 mb-4">Create and manage courses. Add course materials including videos, PDFs, and documents.</p>
-                <span className="text-green-600 font-medium">Manage Courses →</span>
-              </div>
-            </Link>
-            
-            <Link href="/dashboard/admin/blogs" className="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-              <div className="p-6">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Blog Management</h3>
-                <p className="text-gray-600 mb-4">Write, edit, and publish blog posts. Manage blog content and categories.</p>
-                <span className="text-red-600 font-medium">Manage Blogs →</span>
-              </div>
-            </Link>
+        </div>
+        
+        <div className="glass-card p-6 rounded-xl border border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400 font-rajdhani mb-2">Total Videos</p>
+              <h3 className="text-3xl font-orbitron font-bold text-neon-purple">{stats.videos}</h3>
+            </div>
+            <div className="text-4xl">🎥</div>
           </div>
-          
-          <div className="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="text-lg font-semibold mb-2">Need Help?</h3>
-            <p className="text-gray-600 mb-4">
-              This admin dashboard provides comprehensive tools to manage all aspects of your CyberProbes website.
-              Each section is dedicated to specific content management with intuitive interfaces.
-            </p>
-            <p className="text-gray-600">
-              For more detailed instructions, please refer to the documentation or contact support.
-            </p>
+        </div>
+        
+        <div className="glass-card p-6 rounded-xl border border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400 font-rajdhani mb-2">Total Blog Posts</p>
+              <h3 className="text-3xl font-orbitron font-bold text-red-400">{stats.blogs}</h3>
+            </div>
+            <div className="text-4xl">✍️</div>
           </div>
+        </div>
+
+        <div className="glass-card p-6 rounded-xl border border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400 font-rajdhani mb-2">Total Payments</p>
+              <h3 className="text-3xl font-orbitron font-bold text-yellow-400">{stats.payments}</h3>
+            </div>
+            <div className="text-4xl">💳</div>
+          </div>
+        </div>
+
+        <div className="glass-card p-6 rounded-xl border border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400 font-rajdhani mb-2">Total Revenue</p>
+              <h3 className="text-3xl font-orbitron font-bold text-neon-green">₹{stats.revenue.toLocaleString()}</h3>
+            </div>
+            <div className="text-4xl">💰</div>
+          </div>
+        </div>
+      </div>
+          
+      {/* Management Modules */}
+      <div>
+        <h2 className="text-2xl font-orbitron font-bold text-white mb-6">Management Modules</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Link href="/dashboard/admin/courses" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">📚</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">Course Management</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">Create, edit, and manage courses with materials</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">Manage →</span>
+          </Link>
+          
+          <Link href="/dashboard/admin/videos" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">🎥</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">Video Management</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">Upload and manage course videos</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">Manage →</span>
+          </Link>
+          
+          <Link href="/dashboard/admin/users" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">👥</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">User Management</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">Create, edit, and manage user accounts</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">Manage →</span>
+          </Link>
+          
+          <Link href="/dashboard/admin/payments" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">💳</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">Payment Reports</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">View and verify payment transactions</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">View →</span>
+          </Link>
+          
+          <Link href="/dashboard/admin/blogs" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">✍️</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">Blog Management</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">Write, edit, and publish blog posts</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">Manage →</span>
+          </Link>
+          
+          <Link href="/dashboard/admin/updates" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">🔔</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">Updates & Notifications</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">Manage platform updates and announcements</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">Manage →</span>
+          </Link>
+          
+          <Link href="/dashboard/admin/settings" className="glass-card p-6 rounded-xl border border-gray-700 hover:border-cyber-blue transition-all group">
+            <div className="text-4xl mb-4">⚙️</div>
+            <h3 className="text-lg font-orbitron font-semibold text-white mb-2 group-hover:text-cyber-blue transition-colors">Settings</h3>
+            <p className="text-gray-400 font-rajdhani text-sm mb-4">Configure system and payment settings</p>
+            <span className="text-cyber-blue font-rajdhani font-medium">Configure →</span>
+          </Link>
         </div>
       </div>
     </div>
