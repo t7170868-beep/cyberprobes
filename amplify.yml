@@ -14,6 +14,8 @@ frontend:
         - echo "Type declarations installed"
         - echo "Running Prisma commands"
         - 'if [ -n "$DATABASE_URL" ]; then echo "DATABASE_URL is set"; echo "DATABASE_URL starts with: $(echo "$DATABASE_URL" | cut -c1-30)"; else echo "WARNING DATABASE_URL is empty"; fi'
+        - 'export DATABASE_URL=$(echo "$DATABASE_URL" | xargs)'
+        - echo "DATABASE_URL trimmed"
         - npx prisma generate --schema=./prisma/schema.prisma
         - npx prisma db push --accept-data-loss --skip-generate
     build:
