@@ -1,4 +1,15 @@
 import Link from 'next/link'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: "Page Not Found | CyberProbes",
+  description: "The page you are looking for could not be found.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL?.startsWith("http")
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : "https://main.d1ce8jq8iz0ibb.amplifyapp.com"
+  ),
+}
 
 export default function NotFound() {
   return (
