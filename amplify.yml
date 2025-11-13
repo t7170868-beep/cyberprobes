@@ -60,6 +60,16 @@ frontend:
         - echo "✅ Environment variables configured (SSM warning can be ignored)"
     build:
       commands:
+        - echo "✅ Verifying environment variables in build phase..."
+        - |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "❌ ERROR: DATABASE_URL missing in build phase"
+            exit 1
+          fi
+        - |
+          if [ -z "$NEXTAUTH_SECRET" ]; then
+            echo "⚠️ WARNING: NEXTAUTH_SECRET missing in build phase"
+          fi
         - echo "✅ Generating Prisma Client"
         - npx prisma generate --schema=./prisma/schema.prisma
         - echo "✅ Building Next.js app"
