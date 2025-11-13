@@ -171,4 +171,6 @@ export const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30 days for better security)
   },
   secret: resolveSecret(),
+  // Ensure NEXTAUTH_URL is set for proper callback URLs
+  url: process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://main.d1ce8jq8iz0ibb.amplifyapp.com",
 }; 
