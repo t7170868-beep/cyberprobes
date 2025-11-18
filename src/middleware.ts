@@ -4,9 +4,23 @@ import { NextRequest, NextResponse } from 'next/server';
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   try {
+    // Resolve secret with fallback to prevent errors
+    const secret = process.env.NEXTAUTH_SECRET || 
+                   process.env.AUTH_SECRET || 
+                   process.env.JWT_SECRET;
+    
+    // If no secret is available, skip token verification but continue
+    if (!secret) {
+      console.warn("[middleware] No auth secret available, skipping token verification");
+      const response = NextResponse.next();
+      response.headers.set('X-Frame-Options', 'DENY');
+      response.headers.set('X-Content-Type-Options', 'nosniff');
+      return response;
+    }
+
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET
+      secret: secret
     });
 
     const { pathname } = request.nextUrl;

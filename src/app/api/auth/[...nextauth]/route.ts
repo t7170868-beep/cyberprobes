@@ -43,4 +43,40 @@ try {
   handler = createErrorHandler(error) as any;
 }
 
-export { handler as GET, handler as POST }; 
+// Wrap handlers with error catching to prevent unhandled errors
+// NextAuth handlers have signature: (req: NextRequest, context: { params: Promise<{ catchall: string[] }> })
+const wrapHandler = (handlerFn: any) => {
+  return async (req: NextRequest, context: any) => {
+    try {
+      const result = await handlerFn(req, context);
+      return result;
+    } catch (error) {
+      console.error("[NextAuth] Runtime error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      
+      // Check if it's a database connection error
+      if (errorMessage.includes("PrismaClient") || errorMessage.includes("database") || errorMessage.includes("connection")) {
+        return NextResponse.json(
+          {
+            error: "Database connection error",
+            message: "Unable to connect to database. Please check DATABASE_URL configuration.",
+            hint: "Please check AWS Amplify Console → Environment Variables → DATABASE_URL",
+          },
+          { status: 500 }
+        );
+      }
+      
+      return NextResponse.json(
+        {
+          error: "Authentication service error",
+          message: process.env.NODE_ENV === "development" ? errorMessage : "An error occurred during authentication",
+          hint: "Please check server logs for details",
+        },
+        { status: 500 }
+      );
+    }
+  };
+};
+
+export const GET = wrapHandler(handler);
+export const POST = wrapHandler(handler); 

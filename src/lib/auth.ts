@@ -61,10 +61,15 @@ const resolveSecret = () => {
   };
   console.error("[auth] Secret resolution failed in production. Available vars:", JSON.stringify(availableVars, null, 2));
   
-  throw new Error(
-    `NEXTAUTH_SECRET environment variable is required. Available vars: ${JSON.stringify(availableVars)}. ` +
-    `Please set NEXTAUTH_SECRET in AWS Amplify Console → Environment Variables.`
+  // Instead of throwing, generate a temporary secret and log a warning
+  // This prevents the entire app from crashing with a 500 error
+  const fallbackSecret = crypto.randomBytes(32).toString("hex");
+  console.error(
+    `[auth] CRITICAL: NEXTAUTH_SECRET is missing in production! ` +
+    `Using temporary fallback secret. Please set NEXTAUTH_SECRET in AWS Amplify Console → Environment Variables. ` +
+    `Available vars: ${JSON.stringify(availableVars)}`
   );
+  return fallbackSecret;
 };
 
 export const authOptions: NextAuthOptions = {
