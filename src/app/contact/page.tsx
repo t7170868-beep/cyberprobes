@@ -9,6 +9,12 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Link from 'next/link';
 
 export default function ContactPage() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const envSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const recaptchaSiteKey = envSiteKey || (!isProduction ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : undefined);
+  const isRecaptchaConfigured = Boolean(envSiteKey);
+  const showMissingSiteKeyWarning = isProduction && !isRecaptchaConfigured;
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -72,6 +78,11 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (showMissingSiteKeyWarning) {
+      setSubmitError('Contact form is temporarily unavailable. Please contact us at support@cyberprobes.in while we finish configuring reCAPTCHA.');
+      return;
+    }
+
     // Check reCAPTCHA
     if (!recaptchaToken) {
       setSubmitError('Please complete the reCAPTCHA verification.');
@@ -400,28 +411,36 @@ export default function ContactPage() {
                   
                   {/* reCAPTCHA */}
                   <div className="flex justify-center">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}
-                      onChange={(token) => setRecaptchaToken(token)}
-                      onExpired={() => setRecaptchaToken(null)}
-                      onError={() => {
-                        setSubmitError('reCAPTCHA error. Please refresh the page and try again.');
-                        setRecaptchaToken(null);
-                      }}
-                      theme="light"
-                    />
-                    {!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-                      <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
-                        ⚠️ reCAPTCHA site key not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your environment variables.
+                    {recaptchaSiteKey ? (
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey={recaptchaSiteKey}
+                        onChange={(token) => setRecaptchaToken(token)}
+                        onExpired={() => setRecaptchaToken(null)}
+                        onError={() => {
+                          setSubmitError('reCAPTCHA error. Please refresh the page and try again.');
+                          setRecaptchaToken(null);
+                        }}
+                        theme="light"
+                      />
+                    ) : (
+                      <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 text-sm text-yellow-800 dark:text-yellow-200">
+                        <p className="font-semibold mb-1">reCAPTCHA is not configured.</p>
+                        <p className="mb-0">Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your environment variables to enable the contact form.</p>
                       </div>
                     )}
                   </div>
+
+                  {showMissingSiteKeyWarning && (
+                    <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm text-red-800 dark:text-red-200">
+                      ⚠️ Contact form temporarily unavailable. Please email us directly at <a href="mailto:support@cyberprobes.in" className="underline">support@cyberprobes.in</a>.
+                    </div>
+                  )}
                   
                   <div>
                     <button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || showMissingSiteKeyWarning}
                       className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
                       {isSubmitting ? (
