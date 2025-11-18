@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Metadata } from 'next';
 import ReCAPTCHA from 'react-google-recaptcha';
-
-// Note: This metadata will be applied at the layout level since this is a client component
-// For client components, metadata should be defined in the parent layout or a separate metadata file
 import Link from 'next/link';
 
 export default function ContactPage() {
