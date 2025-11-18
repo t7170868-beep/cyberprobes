@@ -1,0 +1,84 @@
+═══════════════════════════════════════════════════════════
+  GODADDY DOMAIN SETUP CHECKLIST
+═══════════════════════════════════════════════════════════
+
+📋 PRE-SETUP
+───────────────────────────────────────────────────────────
+[ ] GoDaddy account ready (adarshsrivastavaa001@gmail.com)
+[ ] AWS Amplify app deployed and working
+[ ] Domain name decided (e.g., cyberprobes.com)
+
+🔐 STEP 1: GODADDY LOGIN
+───────────────────────────────────────────────────────────
+[ ] GoDaddy.com open kiya
+[ ] Login successful (adarshsrivastavaa001@gmail.com)
+[ ] My Products section mein gaya
+[ ] Domain select kiya
+
+🌐 STEP 2: AWS AMPLIFY DNS RECORDS
+───────────────────────────────────────────────────────────
+[ ] AWS Amplify Console open kiya
+[ ] Domain management section mein gaya
+[ ] Add domain button click kiya
+[ ] GoDaddy domain enter kiya
+[ ] DNS records copy kiye:
+    - CNAME for root domain (@)
+    - CNAME for www subdomain
+[ ] CloudFront URL note kiya
+
+⚙️ STEP 3: GODADDY DNS CONFIGURATION
+───────────────────────────────────────────────────────────
+[ ] GoDaddy DNS management page open kiya
+[ ] Existing conflicting records delete kiye (if any)
+[ ] CNAME record add kiya for root domain (@):
+    - Type: CNAME
+    - Name: @
+    - Value: (AWS CloudFront URL)
+    - TTL: 600
+[ ] CNAME record add kiya for www:
+    - Type: CNAME
+    - Name: www
+    - Value: (same CloudFront URL)
+    - TTL: 600
+[ ] Records save kiye
+
+🔧 STEP 4: ENVIRONMENT VARIABLES UPDATE
+───────────────────────────────────────────────────────────
+[ ] AWS Amplify Console → App settings → Environment variables
+[ ] NEXTAUTH_URL update kiya:
+    Old: https://main.d1ce8jq8iz0ibb.amplifyapp.com
+    New: https://yourdomain.com
+[ ] NEXT_PUBLIC_BASE_URL update kiya:
+    Old: https://main.d1ce8jq8iz0ibb.amplifyapp.com
+    New: https://yourdomain.com
+[ ] NO trailing slash (/)
+[ ] HTTPS use kiya (not HTTP)
+[ ] NO quotes around values
+[ ] Save button click kiya
+[ ] Redeploy started/complete
+
+⏳ STEP 5: WAIT & VERIFY
+───────────────────────────────────────────────────────────
+[ ] DNS propagation check kiya (whatsmydns.net)
+    - Wait time: 30 min - 2 hours
+[ ] SSL certificate status check kiya (AWS Amplify)
+    - Wait time: 1-2 hours
+    - Status: Available ✅
+[ ] Website custom domain se open kiya
+[ ] HTTPS lock icon visible hai
+[ ] Login functionality test kiya
+[ ] No 500 errors
+
+✅ FINAL VERIFICATION
+───────────────────────────────────────────────────────────
+[ ] https://yourdomain.com - Working
+[ ] https://www.yourdomain.com - Working
+[ ] SSL Certificate - Active
+[ ] Login - Working
+[ ] All pages loading correctly
+[ ] Environment variables showing correct domain
+
+═══════════════════════════════════════════════════════════
+  ESTIMATED TIME: 15-20 min setup + 1-2 hours wait
+═══════════════════════════════════════════════════════════
+

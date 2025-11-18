@@ -82,6 +82,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.warn("[auth] Missing credentials in authorize");
           return null;
         }
 
@@ -89,28 +90,64 @@ export const authOptions: NextAuthOptions = {
           // Normalize email to lowercase
           const normalizedEmail = credentials.email.toLowerCase().trim();
           
+          // Log login attempt (only in development or for debugging)
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] Login attempt for:", normalizedEmail);
+          }
+          
           // Direct database validation using Prisma with error handling
           let user;
           try {
+            // Check if DATABASE_URL is set
+            if (!process.env.DATABASE_URL) {
+              console.error("[auth] DATABASE_URL is not set");
+              return null;
+            }
+            
             user = await prisma.user.findUnique({
               where: { email: normalizedEmail }
             });
-          } catch (dbError) {
-            // Database connection error - log but don't expose
+            
             if (process.env.NODE_ENV === 'development') {
-              console.error("Database error during authorization:", dbError);
+              console.log("[auth] User lookup result:", user ? "Found" : "Not found");
             }
+          } catch (dbError) {
+            // Database connection error - log with more details
+            const errorMessage = dbError instanceof Error ? dbError.message : String(dbError);
+            console.error("[auth] Database error during authorization:", errorMessage);
+            
+            // Check for specific error types
+            if (errorMessage.includes("Can't reach database server") || 
+                errorMessage.includes("Connection") ||
+                errorMessage.includes("timeout")) {
+              console.error("[auth] Database connection failed. Check DATABASE_URL and RDS security group.");
+            } else if (errorMessage.includes("Invalid") || errorMessage.includes("protocol")) {
+              console.error("[auth] DATABASE_URL format error. Check connection string format.");
+            }
+            
             return null;
           }
 
           if (!user) {
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("[auth] User not found:", normalizedEmail);
+            }
             return null;
           }
 
           // Verify password
-          const isValid = await bcrypt.compare(credentials.password, user.password);
+          let isValid = false;
+          try {
+            isValid = await bcrypt.compare(credentials.password, user.password);
+          } catch (bcryptError) {
+            console.error("[auth] Password comparison error:", bcryptError);
+            return null;
+          }
           
           if (!isValid) {
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("[auth] Invalid password for:", normalizedEmail);
+            }
             return null;
           }
 
@@ -122,7 +159,12 @@ export const authOptions: NextAuthOptions = {
           };
           
           if (!userData || !userData.id) {
+            console.error("[auth] Invalid user data structure");
             return null;
+          }
+          
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] Login successful for:", normalizedEmail);
           }
           
           return {
@@ -133,10 +175,15 @@ export const authOptions: NextAuthOptions = {
           } as any;
 
         } catch (error) {
-          // Log error but don't expose details
-          if (process.env.NODE_ENV === 'development') {
-            console.error("Authorization error:", error);
+          // Log error with more context
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.error("[auth] Authorization error:", errorMessage);
+          
+          // Log stack trace in development
+          if (process.env.NODE_ENV === 'development' && error instanceof Error) {
+            console.error("[auth] Stack trace:", error.stack);
           }
+          
           return null;
         }
       }

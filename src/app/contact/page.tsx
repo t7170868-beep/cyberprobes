@@ -110,9 +110,25 @@ export default function ContactPage() {
     setIsSubmitting(true);
     setSubmitError('');
     
-    // Simulate API call with timeout
+    // Submit to real API with reCAPTCHA validation
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit form');
+      }
+
       setSubmitSuccess(true);
       setFormData({
         name: '',
@@ -128,7 +144,14 @@ export default function ContactPage() {
         recaptchaRef.current.reset();
       }
     } catch (error) {
-      setSubmitError('Something went wrong. Please try again later.');
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again later.';
+      setSubmitError(errorMessage);
+      
+      // Reset reCAPTCHA on error so user can try again
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -336,13 +359,23 @@ export default function ContactPage() {
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 !text-gray-900 dark:!text-white"
                     >
                       <option value="">Please select a service</option>
-                      <option value="Penetration Testing">Penetration Testing</option>
-                      <option value="Security Assessment">Security Assessment</option>
-                      <option value="Digital Forensics">Digital Forensics</option>
-                      <option value="Incident Response">Incident Response</option>
-                      <option value="Security Training">Security Training</option>
-                      <option value="Other">Other</option>
+                      <option value="Penetration Testing">🔒 Penetration Testing - Identify vulnerabilities before attackers do</option>
+                      <option value="Security Assessment">🛡️ Security Assessment - Comprehensive security evaluation</option>
+                      <option value="Digital Forensics">🔍 Digital Forensics - Investigate and analyze digital evidence</option>
+                      <option value="Incident Response">⚡ Incident Response - Rapid response to security incidents</option>
+                      <option value="Security Training">📚 Security Training - Train your team on cybersecurity best practices</option>
+                      <option value="Other">💼 Other - General inquiry or custom service</option>
                     </select>
+                    {formData.service && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {formData.service === 'Penetration Testing' && 'We simulate real-world attacks to find security weaknesses in your systems.'}
+                        {formData.service === 'Security Assessment' && 'Comprehensive evaluation of your security posture and infrastructure.'}
+                        {formData.service === 'Digital Forensics' && 'Expert analysis of digital evidence for legal and investigative purposes.'}
+                        {formData.service === 'Incident Response' && '24/7 rapid response team to contain and remediate security breaches.'}
+                        {formData.service === 'Security Training' && 'Customized training programs to enhance your team\'s cybersecurity knowledge.'}
+                        {formData.service === 'Other' && 'Tell us about your specific requirements in your message.'}
+                      </p>
+                    )}
                   </div>
                   
                   <div>
@@ -369,11 +402,20 @@ export default function ContactPage() {
                   <div className="flex justify-center">
                     <ReCAPTCHA
                       ref={recaptchaRef}
-                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'} // Test key
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}
                       onChange={(token) => setRecaptchaToken(token)}
                       onExpired={() => setRecaptchaToken(null)}
+                      onError={() => {
+                        setSubmitError('reCAPTCHA error. Please refresh the page and try again.');
+                        setRecaptchaToken(null);
+                      }}
                       theme="light"
                     />
+                    {!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+                      <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ reCAPTCHA site key not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your environment variables.
+                      </div>
+                    )}
                   </div>
                   
                   <div>
