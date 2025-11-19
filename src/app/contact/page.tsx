@@ -430,20 +430,43 @@ export default function ContactPage() {
                   )}
                   
                   {/* reCAPTCHA */}
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center">
+                    {/* Debug Info (temporary - remove after fix) */}
+                    {isProduction && (
+                      <div className="mb-3 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400 max-w-md text-center">
+                        <p>Debug: Key={recaptchaSiteKey ? `${recaptchaSiteKey.substring(0, 15)}...` : 'MISSING'}</p>
+                        <p>Domain={typeof window !== 'undefined' ? window.location.hostname : 'unknown'}</p>
+                        <p>Valid={isValidSiteKey ? 'YES' : 'NO'}</p>
+                      </div>
+                    )}
+                    
                     {recaptchaSiteKey && isValidSiteKey ? (
-                      <ReCAPTCHA
-                        ref={recaptchaRef}
-                        sitekey={recaptchaSiteKey}
-                        onChange={(token) => setRecaptchaToken(token)}
-                        onExpired={() => setRecaptchaToken(null)}
-                        onError={() => {
-                          console.error('[Contact] reCAPTCHA error occurred');
-                          setSubmitError('reCAPTCHA error. Please refresh the page and try again.');
-                          setRecaptchaToken(null);
-                        }}
-                        theme="light"
-                      />
+                      <div className="flex flex-col items-center">
+                        <ReCAPTCHA
+                          ref={recaptchaRef}
+                          sitekey={recaptchaSiteKey}
+                          onChange={(token) => {
+                            console.log('[Contact] reCAPTCHA token received:', token ? 'YES' : 'NO');
+                            setRecaptchaToken(token);
+                          }}
+                          onExpired={() => {
+                            console.log('[Contact] reCAPTCHA expired');
+                            setRecaptchaToken(null);
+                          }}
+                          onError={() => {
+                            console.error('[Contact] reCAPTCHA error - Key used:', recaptchaSiteKey?.substring(0, 20));
+                            console.error('[Contact] Current domain:', typeof window !== 'undefined' ? window.location.hostname : 'unknown');
+                            setSubmitError('reCAPTCHA error. Please verify the site key matches your domain in Google reCAPTCHA console.');
+                            setRecaptchaToken(null);
+                          }}
+                          theme="light"
+                        />
+                        {isProduction && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center max-w-md">
+                            If you see "Invalid site key", verify domain <strong>{typeof window !== 'undefined' ? window.location.hostname : ''}</strong> is registered in Google reCAPTCHA console.
+                          </p>
+                        )}
+                      </div>
                     ) : (
                       <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 text-sm text-yellow-800 dark:text-yellow-200">
                         <p className="font-semibold mb-1">reCAPTCHA is not configured.</p>
