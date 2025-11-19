@@ -56,6 +56,13 @@ frontend:
             echo "WARNING - NEXT_PUBLIC_BASE_URL is not set"
           fi
         - |
+          if [ -n "$NEXT_PUBLIC_RECAPTCHA_SITE_KEY" ]; then
+            export NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$NEXT_PUBLIC_RECAPTCHA_SITE_KEY"
+            echo "SUCCESS - NEXT_PUBLIC_RECAPTCHA_SITE_KEY is set (first 20 chars) - $(echo $NEXT_PUBLIC_RECAPTCHA_SITE_KEY | cut -c1-20)"
+          else
+            echo "WARNING - NEXT_PUBLIC_RECAPTCHA_SITE_KEY is not set"
+          fi
+        - |
           if [ -n "$NODE_ENV" ]; then
             export NODE_ENV="$NODE_ENV"
             echo "SUCCESS - NODE_ENV = $NODE_ENV"
@@ -75,6 +82,12 @@ frontend:
         - |
           if [ -z "$NEXTAUTH_SECRET" ]; then
             echo "WARNING - NEXTAUTH_SECRET missing in build phase"
+          fi
+        - |
+          if [ -z "$NEXT_PUBLIC_RECAPTCHA_SITE_KEY" ]; then
+            echo "WARNING - NEXT_PUBLIC_RECAPTCHA_SITE_KEY missing in build phase"
+          else
+            echo "SUCCESS - NEXT_PUBLIC_RECAPTCHA_SITE_KEY is available in build phase"
           fi
         - echo "Generating Prisma Client"
         - npx prisma generate --schema=./prisma/schema.prisma

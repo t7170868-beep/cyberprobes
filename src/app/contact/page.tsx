@@ -6,9 +6,12 @@ import Link from 'next/link';
 
 export default function ContactPage() {
   const isProduction = process.env.NODE_ENV === 'production';
-  const envSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-  const recaptchaSiteKey = envSiteKey || (!isProduction ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : undefined);
-  const isRecaptchaConfigured = Boolean(envSiteKey);
+  // Get site key from environment - handle empty strings and whitespace
+  const envSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() || '';
+  const recaptchaSiteKey = envSiteKey && envSiteKey.length > 0 
+    ? envSiteKey 
+    : (!isProduction ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : undefined);
+  const isRecaptchaConfigured = Boolean(envSiteKey && envSiteKey.length > 0);
   const showMissingSiteKeyWarning = isProduction && !isRecaptchaConfigured;
 
   const [formData, setFormData] = useState({
