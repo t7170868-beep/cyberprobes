@@ -432,8 +432,8 @@ export default function ContactPage() {
                         sitekey={recaptchaSiteKey}
                         onChange={(token) => setRecaptchaToken(token)}
                         onExpired={() => setRecaptchaToken(null)}
-                        onError={(error) => {
-                          console.error('[Contact] reCAPTCHA error:', error);
+                        onError={() => {
+                          console.error('[Contact] reCAPTCHA error occurred');
                           setSubmitError('reCAPTCHA error. Please refresh the page and try again.');
                           setRecaptchaToken(null);
                         }}
