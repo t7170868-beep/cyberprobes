@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import FALLBACK_COURSES from '@/data/fallbackCourses';
 
 // GET /api/courses/[id] - Get a specific course by ID
 export async function GET(
@@ -11,22 +12,36 @@ export async function GET(
   try {
     const { id } = await params;
     
-    const course = await prisma.course.findUnique({
-      where: { id },
-      include: {
-        materials: true,
-        modules: {
-          include: {
-            materials: {
-              orderBy: { order: 'asc' }
-            }
-          },
-          orderBy: { order: 'asc' }
+    let course = null;
+
+    try {
+      course = await prisma.course.findUnique({
+        where: { id },
+        include: {
+          materials: true,
+          modules: {
+            include: {
+              materials: {
+                orderBy: { order: 'asc' }
+              }
+            },
+            orderBy: { order: 'asc' }
+          }
         }
-      }
-    });
+      });
+    } catch (dbError) {
+      console.error('Error querying database for course, attempting fallback catalogue.', dbError);
+    }
 
     if (!course) {
+      const fallbackCourse = FALLBACK_COURSES.find(
+        (fallback) => fallback.id === id || fallback.slug === id
+      );
+
+      if (fallbackCourse) {
+        return NextResponse.json(fallbackCourse);
+      }
+
       return NextResponse.json(
         { error: 'Course not found' },
         { status: 404 }
