@@ -11,16 +11,19 @@ export default function ContactPage() {
   const envSiteKey = rawSiteKey?.trim() || '';
   
   // Validate site key format (should start with 6L and be ~40 chars)
-  const isValidSiteKey = envSiteKey && envSiteKey.length > 30 && envSiteKey.startsWith('6L');
+  const isValidEnvSiteKey = envSiteKey && envSiteKey.length > 30 && envSiteKey.startsWith('6L');
   
   // Use the actual site key from Google: 6LdI4BASAAAAABYmNn15fcPh9HpNkQTUHioOvSx8
   // If env var is not available but we're in production, use the real key directly
-  const recaptchaSiteKey = isValidSiteKey 
+  const recaptchaSiteKey = isValidEnvSiteKey 
     ? envSiteKey 
     : (isProduction ? '6LdI4BASAAAAABYmNn15fcPh9HpNkQTUHioOvSx8' : '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
   
+  // Validate the final key that will be used (whether from env or fallback)
+  const isValidSiteKey = recaptchaSiteKey && recaptchaSiteKey.length > 30 && recaptchaSiteKey.startsWith('6L');
+  
   const isRecaptchaConfigured = Boolean(isValidSiteKey);
-  const showMissingSiteKeyWarning = isProduction && !isRecaptchaConfigured;
+  const showMissingSiteKeyWarning = isProduction && !isValidEnvSiteKey;
   
   // Debug logging (both development and production for troubleshooting)
   useEffect(() => {
@@ -29,13 +32,14 @@ export default function ContactPage() {
       rawLength: rawSiteKey?.length || 0,
       trimmed: envSiteKey ? `${envSiteKey.substring(0, 10)}...` : 'empty',
       trimmedLength: envSiteKey?.length || 0,
-      isValid: isValidSiteKey,
+      isValidEnv: isValidEnvSiteKey,
+      isValidFinal: isValidSiteKey,
       willUse: recaptchaSiteKey ? `${recaptchaSiteKey.substring(0, 10)}...` : 'undefined',
       willUseLength: recaptchaSiteKey?.length || 0,
       isProduction: isProduction,
       currentDomain: typeof window !== 'undefined' ? window.location.hostname : 'server'
     });
-  }, [rawSiteKey, envSiteKey, isValidSiteKey, recaptchaSiteKey, isProduction]);
+  }, [rawSiteKey, envSiteKey, isValidEnvSiteKey, isValidSiteKey, recaptchaSiteKey, isProduction]);
 
   const [formData, setFormData] = useState({
     name: '',
