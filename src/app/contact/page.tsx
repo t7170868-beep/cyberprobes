@@ -7,12 +7,28 @@ import Link from 'next/link';
 export default function ContactPage() {
   const isProduction = process.env.NODE_ENV === 'production';
   // Get site key from environment - handle empty strings and whitespace
-  const envSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() || '';
-  const recaptchaSiteKey = envSiteKey && envSiteKey.length > 0 
+  const rawSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const envSiteKey = rawSiteKey?.trim() || '';
+  
+  // Validate site key format (should start with 6L and be ~40 chars)
+  const isValidSiteKey = envSiteKey && envSiteKey.length > 30 && envSiteKey.startsWith('6L');
+  
+  const recaptchaSiteKey = isValidSiteKey 
     ? envSiteKey 
     : (!isProduction ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : undefined);
-  const isRecaptchaConfigured = Boolean(envSiteKey && envSiteKey.length > 0);
+  
+  const isRecaptchaConfigured = Boolean(isValidSiteKey);
   const showMissingSiteKeyWarning = isProduction && !isRecaptchaConfigured;
+  
+  // Debug logging (only in development)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Contact] reCAPTCHA Site Key Status:', {
+      raw: rawSiteKey ? `${rawSiteKey.substring(0, 10)}...` : 'undefined',
+      trimmed: envSiteKey ? `${envSiteKey.substring(0, 10)}...` : 'empty',
+      isValid: isValidSiteKey,
+      willUse: recaptchaSiteKey ? `${recaptchaSiteKey.substring(0, 10)}...` : 'undefined'
+    });
+  }
 
   const [formData, setFormData] = useState({
     name: '',
@@ -410,13 +426,14 @@ export default function ContactPage() {
                   
                   {/* reCAPTCHA */}
                   <div className="flex justify-center">
-                    {recaptchaSiteKey ? (
+                    {recaptchaSiteKey && isValidSiteKey ? (
                       <ReCAPTCHA
                         ref={recaptchaRef}
                         sitekey={recaptchaSiteKey}
                         onChange={(token) => setRecaptchaToken(token)}
                         onExpired={() => setRecaptchaToken(null)}
-                        onError={() => {
+                        onError={(error) => {
+                          console.error('[Contact] reCAPTCHA error:', error);
                           setSubmitError('reCAPTCHA error. Please refresh the page and try again.');
                           setRecaptchaToken(null);
                         }}
@@ -425,7 +442,12 @@ export default function ContactPage() {
                     ) : (
                       <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 text-sm text-yellow-800 dark:text-yellow-200">
                         <p className="font-semibold mb-1">reCAPTCHA is not configured.</p>
-                        <p className="mb-0">Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your environment variables to enable the contact form.</p>
+                        <p className="mb-2">Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your environment variables to enable the contact form.</p>
+                        {isProduction && envSiteKey && !isValidSiteKey && (
+                          <p className="text-xs mt-2 text-red-600 dark:text-red-400">
+                            ⚠️ Site key found but invalid format. Please check your environment variable value.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
