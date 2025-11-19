@@ -20,15 +20,20 @@ export default function ContactPage() {
   const isRecaptchaConfigured = Boolean(isValidSiteKey);
   const showMissingSiteKeyWarning = isProduction && !isRecaptchaConfigured;
   
-  // Debug logging (only in development)
-  if (process.env.NODE_ENV === 'development') {
+  // Debug logging (both development and production for troubleshooting)
+  useEffect(() => {
     console.log('[Contact] reCAPTCHA Site Key Status:', {
       raw: rawSiteKey ? `${rawSiteKey.substring(0, 10)}...` : 'undefined',
+      rawLength: rawSiteKey?.length || 0,
       trimmed: envSiteKey ? `${envSiteKey.substring(0, 10)}...` : 'empty',
+      trimmedLength: envSiteKey?.length || 0,
       isValid: isValidSiteKey,
-      willUse: recaptchaSiteKey ? `${recaptchaSiteKey.substring(0, 10)}...` : 'undefined'
+      willUse: recaptchaSiteKey ? `${recaptchaSiteKey.substring(0, 10)}...` : 'undefined',
+      willUseLength: recaptchaSiteKey?.length || 0,
+      isProduction: isProduction,
+      currentDomain: typeof window !== 'undefined' ? window.location.hostname : 'server'
     });
-  }
+  }, [rawSiteKey, envSiteKey, isValidSiteKey, recaptchaSiteKey, isProduction]);
 
   const [formData, setFormData] = useState({
     name: '',
