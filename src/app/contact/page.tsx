@@ -13,9 +13,11 @@ export default function ContactPage() {
   // Validate site key format (should start with 6L and be ~40 chars)
   const isValidSiteKey = envSiteKey && envSiteKey.length > 30 && envSiteKey.startsWith('6L');
   
+  // Use the actual site key from Google: 6LdI4BASAAAAABYmNn15fcPh9HpNkQTUHioOvSx8
+  // If env var is not available but we're in production, use the real key directly
   const recaptchaSiteKey = isValidSiteKey 
     ? envSiteKey 
-    : (!isProduction ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : undefined);
+    : (isProduction ? '6LdI4BASAAAAABYmNn15fcPh9HpNkQTUHioOvSx8' : '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
   
   const isRecaptchaConfigured = Boolean(isValidSiteKey);
   const showMissingSiteKeyWarning = isProduction && !isRecaptchaConfigured;
