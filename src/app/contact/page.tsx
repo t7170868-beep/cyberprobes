@@ -468,10 +468,10 @@ export default function ContactPage() {
                           theme="light"
                         />
                         {isProduction && (
-                          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg text-xs text-blue-800 dark:text-blue-200 max-w-md text-center">
-                            <p className="font-semibold mb-1">⚠️ Domain Verification Required</p>
-                            <p className="mb-1">Current domain: <strong>{typeof window !== 'undefined' ? window.location.hostname : ''}</strong></p>
-                            <p className="mb-0">Go to <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Google reCAPTCHA Console</a> and add this domain to your site configuration.</p>
+                          <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg text-xs text-yellow-800 dark:text-yellow-200 max-w-md text-center">
+                            <p className="font-semibold mb-1">⏳ Waiting for Google Propagation</p>
+                            <p className="mb-1">Domain <strong>{typeof window !== 'undefined' ? window.location.hostname : ''}</strong> is registered.</p>
+                            <p className="mb-0">If error persists, wait 10-15 minutes for Google to propagate changes, then clear cache and refresh.</p>
                           </div>
                         )}
                       </div>
