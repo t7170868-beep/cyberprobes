@@ -479,7 +479,7 @@ export default function ContactPage() {
                   </div>
                   
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    By submitting this form, you agree to our <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</Link>.
+                    By submitting this form, you agree to our <Link href="/legal/privacy-policy" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</Link>.
                   </p>
                 </form>
               )}
